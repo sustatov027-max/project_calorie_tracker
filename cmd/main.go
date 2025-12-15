@@ -21,7 +21,8 @@ func main() {
 	database.Init()
 	server := gin.Default()
 
-	handlers.RegisterProoductRoutes(server)
+	handlers.RegisterProductRoutes(server)
+	handlers.RegisterUserRoutes(server)
 
 	server.Run()
 }
