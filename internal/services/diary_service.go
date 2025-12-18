@@ -25,3 +25,12 @@ func CreateMeal(userID int, productID int, gramms float64) (models.MealLog, erro
 
 	return createdMeal, nil
 }
+
+func GetAllMealsForDay(userID int, date time.Time) ([]models.MealLog, error){
+	meals, err := repositories.ExtractMeals(userID, date)
+	if err != nil{
+		return []models.MealLog{}, err
+	}
+
+	return meals, nil
+}
