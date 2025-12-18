@@ -18,8 +18,7 @@ func Init() *gorm.DB {
 		log.Fatal("Error connect to database: ", err.Error())
 	}
 
-	db.AutoMigrate(&models.Product{})
-	db.AutoMigrate(&models.User{})
+	db.AutoMigrate(&models.Product{}, &models.User{}, &models.MealLog{})
 	return db
 }
 

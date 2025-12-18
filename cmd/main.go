@@ -23,6 +23,7 @@ func main() {
 
 	handlers.RegisterProductRoutes(server)
 	handlers.RegisterUserRoutes(server)
+	handlers.RegisterDiaryRoutes(server)
 
 	server.Run()
 }

@@ -7,7 +7,7 @@ import (
 )
 
 func SaveUser(user *models.User) error{
-	db := database.Init()
+	db := database.DB()
 
 	result := db.Create(user)
 	if err := result.Error; err != nil{
@@ -18,7 +18,7 @@ func SaveUser(user *models.User) error{
 }
 
 func ExtractUser(email string) (models.User, error){
-	db := database.Init()
+	db := database.DB()
 
 	var user models.User
 	result := db.First(&user, "email = ?", email)
@@ -33,11 +33,11 @@ func ExtractUser(email string) (models.User, error){
 }
 
 func GetUserByID(userID any) (models.User, error){
-	db := database.Init()
+	db := database.DB()
 
 	var user models.User
-	db.First(&user, userID)
-	if user.ID == 0{
+	result := db.First(&user, userID)
+	if err := result.Error; err != nil{
 		return models.User{}, errors.New("user not found")
 	}
 

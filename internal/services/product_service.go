@@ -49,3 +49,21 @@ func UpdateProduct(id int, name string, calories float64, proteins float64, fats
 	product := models.Product{ID: id, Name: name, Calories: calories, Proteins: proteins, Fats: fats, Carbohydrates: carbohydrates}
 	return repositories.UpdateProduct(&product)
 }
+
+func CalculateCPFC(product models.Product, gramms float64) (float64, float64, float64, float64){
+	calories := (product.Calories / 100) * gramms
+	proteins := (product.Proteins / 100) * gramms
+	fats := (product.Fats / 100) * gramms
+	carbohydrates := (product.Carbohydrates / 100) * gramms
+
+	return calories, proteins, fats, carbohydrates
+}
+
+func GetProductByID(id int) (models.Product, error){
+	getProduct, err := repositories.GetProductByID(id)
+	if err != nil{
+		return models.Product{}, err
+	}
+
+	return getProduct, nil
+}
