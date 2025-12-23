@@ -46,11 +46,27 @@ func DeleteProduct(id string) error {
 }
 
 func UpdateProduct(id int, name string, calories float64, proteins float64, fats float64, carbohydrates float64) (models.Product, error) {
+	if name == "" {
+		return models.Product{}, errors.New("product name is required")
+	}
+	if calories < 0 {
+		return models.Product{}, errors.New("calories must be >= 0")
+	}
+	if proteins < 0 {
+		return models.Product{}, errors.New("proteins must be >= 0")
+	}
+	if fats < 0 {
+		return models.Product{}, errors.New("fats must be >= 0")
+	}
+	if carbohydrates < 0 {
+		return models.Product{}, errors.New("carbohydrates must be >= 0")
+	}
+
 	product := models.Product{ID: id, Name: name, Calories: calories, Proteins: proteins, Fats: fats, Carbohydrates: carbohydrates}
 	return repositories.UpdateProduct(&product)
 }
 
-func CalculateCPFC(product models.Product, gramms float64) (float64, float64, float64, float64){
+func CalculateCPFC(product models.Product, gramms float64) (float64, float64, float64, float64) {
 	calories := (product.Calories / 100) * gramms
 	proteins := (product.Proteins / 100) * gramms
 	fats := (product.Fats / 100) * gramms
@@ -59,9 +75,9 @@ func CalculateCPFC(product models.Product, gramms float64) (float64, float64, fl
 	return calories, proteins, fats, carbohydrates
 }
 
-func GetProductByID(id int) (models.Product, error){
+func GetProductByID(id int) (models.Product, error) {
 	getProduct, err := repositories.GetProductByID(id)
-	if err != nil{
+	if err != nil {
 		return models.Product{}, err
 	}
 
