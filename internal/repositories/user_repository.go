@@ -6,7 +6,9 @@ import (
 	"project_calorie_tracker/pkg/database"
 )
 
-func SaveUser(user *models.User) error{
+type UserRepository struct{}
+
+func (r *UserRepository) SaveUser(user *models.User) error{
 	db := database.DB()
 
 	result := db.Create(user)
@@ -17,7 +19,7 @@ func SaveUser(user *models.User) error{
 	return nil
 }
 
-func ExtractUser(email string) (models.User, error){
+func (r *UserRepository) ExtractUser(email string) (models.User, error){
 	db := database.DB()
 
 	var user models.User
@@ -32,7 +34,7 @@ func ExtractUser(email string) (models.User, error){
 	return user, nil
 }
 
-func GetUserByID(userID any) (models.User, error){
+func (r *UserRepository) GetUserByID(userID any) (models.User, error){
 	db := database.DB()
 
 	var user models.User

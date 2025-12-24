@@ -5,7 +5,6 @@ import (
 	"math"
 	"os"
 	"project_calorie_tracker/internal/models"
-	"project_calorie_tracker/internal/repositories"
 	"project_calorie_tracker/pkg/utils"
 	"time"
 
@@ -13,7 +12,20 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func RegisterUser(name string, age int, email string, password string, weight float64, height float64, gender string, activeDays int) (models.User, error) {
+type UserRepo interface{
+	SaveUser(user *models.User) error
+	ExtractUser(email string) (models.User, error)
+	GetUserByID(userID any) (models.User, error)
+}
+type UserService struct{
+	postgres UserRepo
+}
+
+func NewUserService(r UserRepo) *UserService{
+	return &UserService{postgres: r}
+}
+
+func (s *UserService) RegisterUser(name string, age int, email string, password string, weight float64, height float64, gender string, activeDays int) (models.User, error) {
 	passwordHash, err := utils.HashPassword(password)
 	if err != nil {
 		return models.User{}, err
@@ -55,7 +67,7 @@ func RegisterUser(name string, age int, email string, password string, weight fl
 
 	newUser := models.User{Name: name, Age: age, Email: email, PasswordHash: passwordHash, Weight: weight, Height: height, Gender: gender, ActiveDays: activeDays, CaloriesNorm: caloriesNorm}
 
-	err = repositories.SaveUser(&newUser)
+	err = s.postgres.SaveUser(&newUser)
 	if err != nil {
 		return models.User{}, err
 	}
@@ -63,9 +75,9 @@ func RegisterUser(name string, age int, email string, password string, weight fl
 	return newUser, nil
 }
 
-func LoginUser(email string, password string) (string, error) {
+func  (s *UserService) LoginUser(email string, password string) (string, error) {
 
-	user, err := repositories.ExtractUser(email)
+	user, err := s.postgres.ExtractUser(email)
 	if err != nil {
 		return "", err
 	}
@@ -88,8 +100,8 @@ func LoginUser(email string, password string) (string, error) {
 	return tokenString, nil
 }
 
-func GetUser(userID any) (models.User, error) {
-	user, err := repositories.GetUserByID(userID)
+func (s *UserService) GetUser(userID any) (models.User, error) {
+	user, err := s.postgres.GetUserByID(userID)
 	if err != nil {
 		return models.User{}, err
 	}

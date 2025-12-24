@@ -74,8 +74,9 @@ func Summary(userID int) (models.DaySummary, error) {
 
 	daySummary.Meals = meals
 
-	user, err := GetUser(userID)
-	if err != nil{
+	service := NewUserService(&repositories.UserRepository{})
+	user, err := service.GetUser(userID)
+	if err != nil {
 		return models.DaySummary{}, err
 	}
 
