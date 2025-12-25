@@ -6,7 +6,9 @@ import (
 	"time"
 )
 
-func InsertMeal(mealLog *models.MealLog) error {
+type DiaryRepository struct{}
+
+func (r *DiaryRepository) InsertMeal(mealLog *models.MealLog) error {
 	db := database.DB()
 
 	result := db.Create(mealLog)
@@ -17,7 +19,7 @@ func InsertMeal(mealLog *models.MealLog) error {
 	return nil
 }
 
-func ExtractMeals(userID int, date time.Time) ([]models.MealLog, error) {
+func (r *DiaryRepository) ExtractMeals(userID int, date time.Time) ([]models.MealLog, error) {
 	db := database.DB()
 	meals := []models.MealLog{}
 
@@ -32,7 +34,7 @@ func ExtractMeals(userID int, date time.Time) ([]models.MealLog, error) {
 	return meals, nil
 }
 
-func DeleteMeal(userID int, id string) error {
+func (r *DiaryRepository) DeleteMeal(userID int, id string) error {
 	db := database.DB()
 
 	result := db.Where("id = ? AND user_id = ?", id, userID).Delete(&models.MealLog{})
@@ -43,7 +45,7 @@ func DeleteMeal(userID int, id string) error {
 	return nil
 }
 
-func UpdateMeal(userID int, meal *models.MealLog) (models.MealLog, error) {
+func (r *DiaryRepository) UpdateMeal(userID int, meal *models.MealLog) (models.MealLog, error) {
 	db := database.DB()
 	updatedMeal := models.MealLog{}
 

@@ -31,9 +31,13 @@ func main() {
 	productService := services.NewProductService(&productRepo)
 	productHandler := handlers.NewProductHandler(productService)
 
+	diaryRepo := repositories.DiaryRepository{}
+	diaryService := services.NewDiaryService(&diaryRepo)
+	diaryHandler := handlers.NewDiaryHandler(diaryService)
+
 	handlers.RegisterProductRoutes(server, productHandler)
 	handlers.RegisterUserRoutes(server, userHandler)
-	handlers.RegisterDiaryRoutes(server)
+	handlers.RegisterDiaryRoutes(server, diaryHandler)
 
 	server.Run()
 }

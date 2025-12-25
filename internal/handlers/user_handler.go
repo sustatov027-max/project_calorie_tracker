@@ -14,17 +14,17 @@ func RegisterUserRoutes(r *gin.Engine, h *UserHandler) {
 	r.GET("/me", middlewares.AuthMiddleware, h.GetUser)
 }
 
-type UserService interface{
+type UserServ interface{
 	RegisterUser(name string, age int, email string, password string, weight float64, height float64, gender string, activeDays int) (models.User, error)
 	LoginUser(email string, password string) (string, error)
 	GetUser(userID any) (models.User, error)
 }
 
 type UserHandler struct{
-	service UserService
+	service UserServ
 }
 
-func NewUserHandler(s UserService) *UserHandler{
+func NewUserHandler(s UserServ) *UserHandler{
 	return &UserHandler{service: s}
 }
 

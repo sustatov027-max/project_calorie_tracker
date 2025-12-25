@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"math"
 	"project_calorie_tracker/internal/models"
 	"time"
 )
@@ -82,10 +83,10 @@ func (s *ProductService) UpdateProduct(id int, name string, calories float64, pr
 }
 
 func (s *ProductService) CalculateCPFC(product models.Product, gramms float64) (float64, float64, float64, float64) {
-	calories := (product.Calories / 100) * gramms
-	proteins := (product.Proteins / 100) * gramms
-	fats := (product.Fats / 100) * gramms
-	carbohydrates := (product.Carbohydrates / 100) * gramms
+	calories := math.Round(((product.Calories / 100) * gramms) * 100) / 100
+	proteins := math.Round(((product.Proteins / 100) * gramms) * 100) / 100
+	fats := math.Round(((product.Fats / 100) * gramms) * 100) / 100
+	carbohydrates := math.Round(((product.Carbohydrates / 100) * gramms) * 100) / 100
 
 	return calories, proteins, fats, carbohydrates
 }

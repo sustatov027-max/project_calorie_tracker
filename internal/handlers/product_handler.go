@@ -16,7 +16,7 @@ func RegisterProductRoutes(r *gin.Engine, h *ProductHandler) {
 	r.PUT("/products/:id", middlewares.AuthMiddleware, h.UpdateProduct)
 }
 
-type ProductService interface{
+type ProductServ interface{
 	CreateProduct(name string, calories float64, proteins float64, fats float64, carbohydrates float64) (models.Product, error)
 	GetAllProducts() ([]models.Product, error)
 	DeleteProduct(id string) error
@@ -25,10 +25,10 @@ type ProductService interface{
 }
 
 type ProductHandler struct{
-	service ProductService
+	service ProductServ
 }
 
-func NewProductHandler(s ProductService) *ProductHandler{
+func NewProductHandler(s ProductServ) *ProductHandler{
 	return &ProductHandler{service: s}
 }
 

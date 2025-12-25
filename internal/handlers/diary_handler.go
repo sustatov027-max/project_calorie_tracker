@@ -3,19 +3,35 @@ package handlers
 import (
 	"net/http"
 	"project_calorie_tracker/internal/middlewares"
-	"project_calorie_tracker/internal/services"
+	"project_calorie_tracker/internal/models"
 	"project_calorie_tracker/pkg/utils"
 	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterDiaryRoutes(r *gin.Engine) {
-	r.POST("/diary", middlewares.AuthMiddleware, CreateMeal)
-	r.GET("/diary", middlewares.AuthMiddleware, GetMealsForDay)
-	r.DELETE("/diary/:id", middlewares.AuthMiddleware, DeleteMeal)
-	r.PUT("/diary/:id", middlewares.AuthMiddleware, UpdateMeal)
-	r.GET("/diary/summary", middlewares.AuthMiddleware, Summary)
+func RegisterDiaryRoutes(r *gin.Engine, h *DiaryHandler) {
+	r.POST("/diary", middlewares.AuthMiddleware, h.CreateMeal)
+	r.GET("/diary", middlewares.AuthMiddleware, h.GetMealsForDay)
+	r.DELETE("/diary/:id", middlewares.AuthMiddleware, h.DeleteMeal)
+	r.PUT("/diary/:id", middlewares.AuthMiddleware, h.UpdateMeal)
+	r.GET("/diary/summary", middlewares.AuthMiddleware, h.Summary)
+}
+
+type DiaryServ interface{
+	CreateMeal(userID int, productID int, gramms float64) (models.MealLog, error)
+	GetAllMealsForDay(userID int, date time.Time) ([]models.MealLog, error)
+	DeleteMeal(userID int, id string) error
+	UpdateMeal(userID int, id string, productID int, gramms float64) (models.MealLog, error)
+	Summary(userID int) (models.DaySummary, error)
+}
+
+type DiaryHandler struct{
+	service DiaryServ
+}
+
+func NewDiaryHandler(s DiaryServ) *DiaryHandler{
+	return &DiaryHandler{service: s}
 }
 
 type requestBody struct {
@@ -23,7 +39,7 @@ type requestBody struct {
 	Gramms    float64 `json:"gramms"`
 }
 
-func CreateMeal(ctx *gin.Context) {
+func (h *DiaryHandler) CreateMeal(ctx *gin.Context) {
 	var body requestBody
 
 	err := ctx.ShouldBindJSON(&body)
@@ -38,7 +54,7 @@ func CreateMeal(ctx *gin.Context) {
 		return
 	}
 
-	createdMeal, err := services.CreateMeal(userID, body.ProductID, body.Gramms)
+	createdMeal, err := h.service.CreateMeal(userID, body.ProductID, body.Gramms)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
@@ -47,7 +63,7 @@ func CreateMeal(ctx *gin.Context) {
 	ctx.IndentedJSON(http.StatusCreated, createdMeal)
 }
 
-func GetMealsForDay(ctx *gin.Context) {
+func (h *DiaryHandler) GetMealsForDay(ctx *gin.Context) {
 	dateStr := ctx.Query("date")
 
 	var date time.Time
@@ -69,7 +85,7 @@ func GetMealsForDay(ctx *gin.Context) {
 		return
 	}
 
-	meals, err := services.GetAllMealsForDay(userID, date)
+	meals, err := h.service.GetAllMealsForDay(userID, date)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
@@ -78,7 +94,7 @@ func GetMealsForDay(ctx *gin.Context) {
 	ctx.IndentedJSON(http.StatusOK, meals)
 }
 
-func DeleteMeal(ctx *gin.Context) {
+func (h *DiaryHandler) DeleteMeal(ctx *gin.Context) {
 	id := ctx.Param("id")
 	userID, err := utils.GetUserID(ctx)
 	if err != nil {
@@ -86,7 +102,7 @@ func DeleteMeal(ctx *gin.Context) {
 		return
 	}
 
-	err = services.DeleteMeal(userID, id)
+	err = h.service.DeleteMeal(userID, id)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
@@ -95,7 +111,7 @@ func DeleteMeal(ctx *gin.Context) {
 	ctx.Status(http.StatusOK)
 }
 
-func UpdateMeal(ctx *gin.Context) {
+func (h *DiaryHandler) UpdateMeal(ctx *gin.Context) {
 	id := ctx.Param("id")
 
 	userID, err := utils.GetUserID(ctx)
@@ -111,7 +127,7 @@ func UpdateMeal(ctx *gin.Context) {
 		return
 	}
 
-	updatedMeal, err := services.UpdateMeal(userID, id, body.ProductID, body.Gramms)
+	updatedMeal, err := h.service.UpdateMeal(userID, id, body.ProductID, body.Gramms)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 		return
@@ -120,14 +136,14 @@ func UpdateMeal(ctx *gin.Context) {
 	ctx.IndentedJSON(http.StatusOK, updatedMeal)
 }
 
-func Summary(ctx *gin.Context) {
+func (h *DiaryHandler) Summary(ctx *gin.Context) {
 	userID, err := utils.GetUserID(ctx)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusUnauthorized, map[string]string{"error": err.Error()})
 		return
 	}
 
-	daySummary, err := services.Summary(userID)
+	daySummary, err := h.service.Summary(userID)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return

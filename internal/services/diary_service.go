@@ -8,21 +8,36 @@ import (
 	"time"
 )
 
-var postgres = repositories.ProductRepository{}
-var service = NewProductService(&postgres)
+type DiaryRepo interface{
+	InsertMeal(mealLog *models.MealLog) error
+	ExtractMeals(userID int, date time.Time) ([]models.MealLog, error)
+	DeleteMeal(userID int, id string) error
+	UpdateMeal(userID int, meal *models.MealLog) (models.MealLog, error)
+}
 
-func CreateMeal(userID int, productID int, gramms float64) (models.MealLog, error) {
+type DiaryService struct{
+	postgres DiaryRepo
+}
+
+func NewDiaryService(r DiaryRepo) *DiaryService{
+	return &DiaryService{postgres: r}
+}
+
+var productService = NewProductService(&repositories.ProductRepository{})
+var userService = NewUserService(&repositories.UserRepository{})
+
+func (s *DiaryService) CreateMeal(userID int, productID int, gramms float64) (models.MealLog, error) {
 	if gramms <= 0 {
 		return models.MealLog{}, errors.New("gramms must be greater than 0")
 	}
 
-	productByID, err := service.GetProductByID(productID)
+	productByID, err := productService.GetProductByID(productID)
 	if err != nil {
 		return models.MealLog{}, err
 	}
 	createdMeal := models.MealLog{UserID: userID, ProductID: productID, Product: productByID, Gramms: gramms, CreatedAt: time.Now()}
 
-	err = repositories.InsertMeal(&createdMeal)
+	err = s.postgres.InsertMeal(&createdMeal)
 	if err != nil {
 		return models.MealLog{}, err
 	}
@@ -30,8 +45,8 @@ func CreateMeal(userID int, productID int, gramms float64) (models.MealLog, erro
 	return createdMeal, nil
 }
 
-func GetAllMealsForDay(userID int, date time.Time) ([]models.MealLog, error) {
-	meals, err := repositories.ExtractMeals(userID, date)
+func (s *DiaryService) GetAllMealsForDay(userID int, date time.Time) ([]models.MealLog, error) {
+	meals, err := s.postgres.ExtractMeals(userID, date)
 	if err != nil {
 		return []models.MealLog{}, err
 	}
@@ -39,12 +54,12 @@ func GetAllMealsForDay(userID int, date time.Time) ([]models.MealLog, error) {
 	return meals, nil
 }
 
-func DeleteMeal(userID int, id string) error {
-	return repositories.DeleteMeal(userID, id)
+func (s *DiaryService) DeleteMeal(userID int, id string) error {
+	return s.postgres.DeleteMeal(userID, id)
 }
 
-func UpdateMeal(userID int, id string, productID int, gramms float64) (models.MealLog, error) {
-	product, err := service.GetProductByID(productID)
+func (s *DiaryService) UpdateMeal(userID int, id string, productID int, gramms float64) (models.MealLog, error) {
+	product, err := productService.GetProductByID(productID)
 	if err != nil {
 		return models.MealLog{}, err
 	}
@@ -55,11 +70,11 @@ func UpdateMeal(userID int, id string, productID int, gramms float64) (models.Me
 	}
 	updatedMeal := models.MealLog{ID: uint(idInt), ProductID: productID, Product: product, Gramms: gramms}
 
-	return repositories.UpdateMeal(userID, &updatedMeal)
+	return s.postgres.UpdateMeal(userID, &updatedMeal)
 }
 
-func Summary(userID int) (models.DaySummary, error) {
-	meals, err := GetAllMealsForDay(userID, time.Now().Local())
+func (s *DiaryService) Summary(userID int) (models.DaySummary, error) {
+	meals, err := s.GetAllMealsForDay(userID, time.Now().Local())
 	if err != nil {
 		return models.DaySummary{}, err
 	}
@@ -67,7 +82,7 @@ func Summary(userID int) (models.DaySummary, error) {
 	var daySummary models.DaySummary
 
 	for _, meal := range meals {
-		calories, proteins, fats, carbohydrates := service.CalculateCPFC(meal.Product, meal.Gramms)
+		calories, proteins, fats, carbohydrates := productService.CalculateCPFC(meal.Product, meal.Gramms)
 
 		daySummary.TotalCalories += calories
 		daySummary.TotalProteins += proteins
@@ -77,8 +92,7 @@ func Summary(userID int) (models.DaySummary, error) {
 
 	daySummary.Meals = meals
 
-	service := NewUserService(&repositories.UserRepository{})
-	user, err := service.GetUser(userID)
+	user, err := userService.GetUser(userID)
 	if err != nil {
 		return models.DaySummary{}, err
 	}
