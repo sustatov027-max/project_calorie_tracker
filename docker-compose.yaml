@@ -1,0 +1,10 @@
+services:
+  pg:
+    image: postgres:18.1
+    restart: always
+    environment:
+      POSTGRES_USER: "IvanSuslov"
+      POSTGRES_PASSWORD: "2556625"
+      POSTGRES_DB: "tracker_calories"
+    ports:
+      - 5433:5432
