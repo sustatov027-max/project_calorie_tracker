@@ -5,7 +5,10 @@ import (
 	"project_calorie_tracker/pkg/database"
 )
 
-func InsertProduct(product *models.Product) error {
+type ProductRepository struct{}
+
+
+func (r *ProductRepository)InsertProduct(product *models.Product) error {
 	db := database.DB()
 	result := db.Create(product)
 	if result.Error != nil {
@@ -14,7 +17,7 @@ func InsertProduct(product *models.Product) error {
 	return nil
 }
 
-func ExtractProducts() ([]models.Product, error) {
+func (r *ProductRepository) ExtractProducts() ([]models.Product, error) {
 	db := database.DB()
 	products := []models.Product{}
 
@@ -26,7 +29,7 @@ func ExtractProducts() ([]models.Product, error) {
 	return products, nil
 }
 
-func DeleteProduct(id string) error {
+func (r *ProductRepository) DeleteProduct(id string) error {
 	db := database.DB()
 
 	result := db.Delete(&models.Product{}, id)
@@ -37,7 +40,7 @@ func DeleteProduct(id string) error {
 	return nil
 }
 
-func UpdateProduct(product *models.Product) (models.Product, error) {
+func (r *ProductRepository) UpdateProduct(product *models.Product) (models.Product, error) {
 	db := database.DB()
 
 	updateProduct := models.Product{}
@@ -50,7 +53,7 @@ func UpdateProduct(product *models.Product) (models.Product, error) {
 	return updateProduct, nil
 }
 
-func GetProductByID(id int) (models.Product, error){
+func (r *ProductRepository) GetProductByID(id int) (models.Product, error){
 	db := database.DB()
 
 	getProduct := models.Product{}

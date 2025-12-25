@@ -3,11 +3,26 @@ package services
 import (
 	"errors"
 	"project_calorie_tracker/internal/models"
-	"project_calorie_tracker/internal/repositories"
 	"time"
 )
 
-func CreateProduct(name string, calories float64, proteins float64, fats float64, carbohydrates float64) (models.Product, error) {
+type ProductRepo interface{
+	InsertProduct(product *models.Product) error
+	ExtractProducts() ([]models.Product, error)
+	DeleteProduct(id string) error
+	UpdateProduct(product *models.Product) (models.Product, error)
+	GetProductByID(id int) (models.Product, error)
+}
+
+type ProductService struct{
+	postgres ProductRepo
+}
+
+func NewProductService(r ProductRepo) *ProductService{
+	return &ProductService{postgres: r}
+}
+
+func (s *ProductService) CreateProduct(name string, calories float64, proteins float64, fats float64, carbohydrates float64) (models.Product, error) {
 	if name == "" {
 		return models.Product{}, errors.New("product name is required")
 	}
@@ -26,26 +41,26 @@ func CreateProduct(name string, calories float64, proteins float64, fats float64
 
 	newProduct := models.Product{ID: 0, Name: name, Calories: calories, Proteins: proteins, Fats: fats, Carbohydrates: carbohydrates, CreatedAt: time.Now().Local()}
 
-	err := repositories.InsertProduct(&newProduct)
+	err := s.postgres.InsertProduct(&newProduct)
 	if err != nil {
 		return models.Product{}, err
 	}
 	return newProduct, nil
 }
 
-func GetAllProducts() ([]models.Product, error) {
-	products, err := repositories.ExtractProducts()
+func (s *ProductService) GetAllProducts() ([]models.Product, error) {
+	products, err := s.postgres.ExtractProducts()
 	if err != nil {
 		return []models.Product{}, err
 	}
 	return products, nil
 }
 
-func DeleteProduct(id string) error {
-	return repositories.DeleteProduct(id)
+func (s *ProductService) DeleteProduct(id string) error {
+	return s.postgres.DeleteProduct(id)
 }
 
-func UpdateProduct(id int, name string, calories float64, proteins float64, fats float64, carbohydrates float64) (models.Product, error) {
+func (s *ProductService) UpdateProduct(id int, name string, calories float64, proteins float64, fats float64, carbohydrates float64) (models.Product, error) {
 	if name == "" {
 		return models.Product{}, errors.New("product name is required")
 	}
@@ -63,10 +78,10 @@ func UpdateProduct(id int, name string, calories float64, proteins float64, fats
 	}
 
 	product := models.Product{ID: id, Name: name, Calories: calories, Proteins: proteins, Fats: fats, Carbohydrates: carbohydrates}
-	return repositories.UpdateProduct(&product)
+	return s.postgres.UpdateProduct(&product)
 }
 
-func CalculateCPFC(product models.Product, gramms float64) (float64, float64, float64, float64) {
+func (s *ProductService) CalculateCPFC(product models.Product, gramms float64) (float64, float64, float64, float64) {
 	calories := (product.Calories / 100) * gramms
 	proteins := (product.Proteins / 100) * gramms
 	fats := (product.Fats / 100) * gramms
@@ -75,8 +90,8 @@ func CalculateCPFC(product models.Product, gramms float64) (float64, float64, fl
 	return calories, proteins, fats, carbohydrates
 }
 
-func GetProductByID(id int) (models.Product, error) {
-	getProduct, err := repositories.GetProductByID(id)
+func (s *ProductService) GetProductByID(id int) (models.Product, error) {
+	getProduct, err := s.postgres.GetProductByID(id)
 	if err != nil {
 		return models.Product{}, err
 	}

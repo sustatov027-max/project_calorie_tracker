@@ -8,12 +8,15 @@ import (
 	"time"
 )
 
+var postgres = repositories.ProductRepository{}
+var service = NewProductService(&postgres)
+
 func CreateMeal(userID int, productID int, gramms float64) (models.MealLog, error) {
 	if gramms <= 0 {
 		return models.MealLog{}, errors.New("gramms must be greater than 0")
 	}
 
-	productByID, err := GetProductByID(productID)
+	productByID, err := service.GetProductByID(productID)
 	if err != nil {
 		return models.MealLog{}, err
 	}
@@ -41,7 +44,7 @@ func DeleteMeal(userID int, id string) error {
 }
 
 func UpdateMeal(userID int, id string, productID int, gramms float64) (models.MealLog, error) {
-	product, err := GetProductByID(productID)
+	product, err := service.GetProductByID(productID)
 	if err != nil {
 		return models.MealLog{}, err
 	}
@@ -64,7 +67,7 @@ func Summary(userID int) (models.DaySummary, error) {
 	var daySummary models.DaySummary
 
 	for _, meal := range meals {
-		calories, proteins, fats, carbohydrates := CalculateCPFC(meal.Product, meal.Gramms)
+		calories, proteins, fats, carbohydrates := service.CalculateCPFC(meal.Product, meal.Gramms)
 
 		daySummary.TotalCalories += calories
 		daySummary.TotalProteins += proteins
