@@ -2,7 +2,6 @@ package services
 
 import (
 	"errors"
-	"fmt"
 	"math"
 	"os"
 	"project_calorie_tracker/internal/models"
@@ -96,7 +95,6 @@ func (s *UserService) RegisterUser(name string, age int, email string, password 
 }
 
 func (s *UserService) LoginUser(email string, password string) (string, error) {
-	fmt.Println("Email", email)
 	if email == "" || password == "" {
 		return "", errors.New("invalid email or password")
 	}

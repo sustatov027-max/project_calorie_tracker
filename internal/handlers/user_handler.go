@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"project_calorie_tracker/internal/middlewares"
 	"project_calorie_tracker/internal/models"
@@ -83,7 +82,6 @@ func (h *UserHandler) LoginUser(ctx *gin.Context) {
 
 func (h *UserHandler) GetUser(ctx *gin.Context) {
 	userID, _ := ctx.Get("userID")
-	fmt.Println(userID)
 
 	user, err := h.service.GetUser(userID)
 	if err != nil {
