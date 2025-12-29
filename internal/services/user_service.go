@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"fmt"
 	"math"
 	"os"
 	"project_calorie_tracker/internal/models"
@@ -12,20 +13,39 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type UserRepo interface{
+type UserRepo interface {
 	SaveUser(user *models.User) error
 	ExtractUser(email string) (models.User, error)
 	GetUserByID(userID any) (models.User, error)
 }
-type UserService struct{
+type UserService struct {
 	postgres UserRepo
 }
 
-func NewUserService(r UserRepo) *UserService{
+func NewUserService(r UserRepo) *UserService {
 	return &UserService{postgres: r}
 }
 
 func (s *UserService) RegisterUser(name string, age int, email string, password string, weight float64, height float64, gender string, activeDays int) (models.User, error) {
+	if name == "" {
+		return models.User{}, errors.New("name must not be empty")
+	}
+	if age <= 0 || age > 110 {
+		return models.User{}, errors.New("age must be > 0 and <= 110")
+	}
+	if email == "" {
+		return models.User{}, errors.New("email must not be empty")
+	}
+	if password == "" {
+		return models.User{}, errors.New("password must not be empty")
+	}
+	if weight <= 0 {
+		return models.User{}, errors.New("weight must be greater than 0")
+	}
+	if height <= 0 {
+		return models.User{}, errors.New("height must be greater than 0")
+	}
+
 	passwordHash, err := utils.HashPassword(password)
 	if err != nil {
 		return models.User{}, err
@@ -75,8 +95,11 @@ func (s *UserService) RegisterUser(name string, age int, email string, password 
 	return newUser, nil
 }
 
-func  (s *UserService) LoginUser(email string, password string) (string, error) {
-
+func (s *UserService) LoginUser(email string, password string) (string, error) {
+	fmt.Println("Email", email)
+	if email == "" || password == "" {
+		return "", errors.New("invalid email or password")
+	}
 	user, err := s.postgres.ExtractUser(email)
 	if err != nil {
 		return "", err

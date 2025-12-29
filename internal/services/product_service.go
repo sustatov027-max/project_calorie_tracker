@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-type ProductRepo interface{
+type ProductRepo interface {
 	InsertProduct(product *models.Product) error
 	ExtractProducts() ([]models.Product, error)
 	DeleteProduct(id string) error
@@ -15,11 +15,11 @@ type ProductRepo interface{
 	GetProductByID(id int) (models.Product, error)
 }
 
-type ProductService struct{
+type ProductService struct {
 	postgres ProductRepo
 }
 
-func NewProductService(r ProductRepo) *ProductService{
+func NewProductService(r ProductRepo) *ProductService {
 	return &ProductService{postgres: r}
 }
 
@@ -58,6 +58,9 @@ func (s *ProductService) GetAllProducts() ([]models.Product, error) {
 }
 
 func (s *ProductService) DeleteProduct(id string) error {
+	if id == "" {
+		return errors.New("id must not be empty")
+	}
 	return s.postgres.DeleteProduct(id)
 }
 
@@ -77,16 +80,19 @@ func (s *ProductService) UpdateProduct(id int, name string, calories float64, pr
 	if carbohydrates < 0 {
 		return models.Product{}, errors.New("carbohydrates must be >= 0")
 	}
+	if id <= 0 {
+		return models.Product{}, errors.New("id must be greater than 0")
+	}
 
 	product := models.Product{ID: id, Name: name, Calories: calories, Proteins: proteins, Fats: fats, Carbohydrates: carbohydrates}
 	return s.postgres.UpdateProduct(&product)
 }
 
 func (s *ProductService) CalculateCPFC(product models.Product, gramms float64) (float64, float64, float64, float64) {
-	calories := math.Round(((product.Calories / 100) * gramms) * 100) / 100
-	proteins := math.Round(((product.Proteins / 100) * gramms) * 100) / 100
-	fats := math.Round(((product.Fats / 100) * gramms) * 100) / 100
-	carbohydrates := math.Round(((product.Carbohydrates / 100) * gramms) * 100) / 100
+	calories := math.Round(((product.Calories/100)*gramms)*100) / 100
+	proteins := math.Round(((product.Proteins/100)*gramms)*100) / 100
+	fats := math.Round(((product.Fats/100)*gramms)*100) / 100
+	carbohydrates := math.Round(((product.Carbohydrates/100)*gramms)*100) / 100
 
 	return calories, proteins, fats, carbohydrates
 }

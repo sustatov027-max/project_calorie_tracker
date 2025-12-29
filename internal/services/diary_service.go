@@ -8,18 +8,18 @@ import (
 	"time"
 )
 
-type DiaryRepo interface{
+type DiaryRepo interface {
 	InsertMeal(mealLog *models.MealLog) error
 	ExtractMeals(userID int, date time.Time) ([]models.MealLog, error)
 	DeleteMeal(userID int, id string) error
 	UpdateMeal(userID int, meal *models.MealLog) (models.MealLog, error)
 }
 
-type DiaryService struct{
+type DiaryService struct {
 	postgres DiaryRepo
 }
 
-func NewDiaryService(r DiaryRepo) *DiaryService{
+func NewDiaryService(r DiaryRepo) *DiaryService {
 	return &DiaryService{postgres: r}
 }
 
@@ -29,6 +29,9 @@ var userService = NewUserService(&repositories.UserRepository{})
 func (s *DiaryService) CreateMeal(userID int, productID int, gramms float64) (models.MealLog, error) {
 	if gramms <= 0 {
 		return models.MealLog{}, errors.New("gramms must be greater than 0")
+	}
+	if productID <= 0 {
+		return models.MealLog{}, errors.New("productID must be greater than 0")
 	}
 
 	productByID, err := productService.GetProductByID(productID)
@@ -55,10 +58,22 @@ func (s *DiaryService) GetAllMealsForDay(userID int, date time.Time) ([]models.M
 }
 
 func (s *DiaryService) DeleteMeal(userID int, id string) error {
+	if id == "" {
+		return errors.New("id must not be empty")
+	}
 	return s.postgres.DeleteMeal(userID, id)
 }
 
 func (s *DiaryService) UpdateMeal(userID int, id string, productID int, gramms float64) (models.MealLog, error) {
+	if gramms <= 0 {
+		return models.MealLog{}, errors.New("gramms must be greater than 0")
+	}
+	if productID <= 0 {
+		return models.MealLog{}, errors.New("productID must be greater than 0")
+	}
+	if id == "" {
+		return models.MealLog{}, errors.New("id must not be empty")
+	}
 	product, err := productService.GetProductByID(productID)
 	if err != nil {
 		return models.MealLog{}, err

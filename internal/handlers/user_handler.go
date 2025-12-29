@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"project_calorie_tracker/internal/middlewares"
 	"project_calorie_tracker/internal/models"
@@ -14,17 +15,17 @@ func RegisterUserRoutes(r *gin.Engine, h *UserHandler) {
 	r.GET("/me", middlewares.AuthMiddleware, h.GetUser)
 }
 
-type UserServ interface{
+type UserServ interface {
 	RegisterUser(name string, age int, email string, password string, weight float64, height float64, gender string, activeDays int) (models.User, error)
 	LoginUser(email string, password string) (string, error)
 	GetUser(userID any) (models.User, error)
 }
 
-type UserHandler struct{
+type UserHandler struct {
 	service UserServ
 }
 
-func NewUserHandler(s UserServ) *UserHandler{
+func NewUserHandler(s UserServ) *UserHandler {
 	return &UserHandler{service: s}
 }
 
@@ -66,25 +67,26 @@ func (h *UserHandler) LoginUser(ctx *gin.Context) {
 	var body LoginRequestBody
 
 	err := ctx.ShouldBindJSON(&body)
-	if err != nil{
+	if err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, map[string]string{"Error read request body": err.Error()})
 		return
 	}
 
 	token, err := h.service.LoginUser(body.Email, body.Password)
-	if err != nil{
+	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, map[string]string{"Error login user": err.Error()})
 		return
 	}
 
-	ctx.IndentedJSON(http.StatusOK, map[string]string{"token": token, "token_type":"Bearer"})
+	ctx.IndentedJSON(http.StatusOK, map[string]string{"token": token, "token_type": "Bearer"})
 }
 
-func (h *UserHandler) GetUser(ctx *gin.Context){
+func (h *UserHandler) GetUser(ctx *gin.Context) {
 	userID, _ := ctx.Get("userID")
+	fmt.Println(userID)
 
 	user, err := h.service.GetUser(userID)
-	if err != nil{
+	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, map[string]string{"Error get user": err.Error()})
 		return
 	}
