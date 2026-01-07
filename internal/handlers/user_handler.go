@@ -8,6 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+//go:generate mockgen -source=user_handler.go -destination=mock/mock_services.go -package=mock
+
 func RegisterUserRoutes(r *gin.Engine, h *UserHandler) {
 	r.POST("/auth/register", h.RegisterUser)
 	r.POST("/auth/login", h.LoginUser)

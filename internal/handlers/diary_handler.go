@@ -18,7 +18,7 @@ func RegisterDiaryRoutes(r *gin.Engine, h *DiaryHandler) {
 	r.GET("/diary/summary", middlewares.AuthMiddleware, h.Summary)
 }
 
-type DiaryServ interface{
+type DiaryServ interface {
 	CreateMeal(userID int, productID int, gramms float64) (models.MealLog, error)
 	GetAllMealsForDay(userID int, date time.Time) ([]models.MealLog, error)
 	DeleteMeal(userID int, id string) error
@@ -26,11 +26,11 @@ type DiaryServ interface{
 	Summary(userID int) (models.DaySummary, error)
 }
 
-type DiaryHandler struct{
+type DiaryHandler struct {
 	service DiaryServ
 }
 
-func NewDiaryHandler(s DiaryServ) *DiaryHandler{
+func NewDiaryHandler(s DiaryServ) *DiaryHandler {
 	return &DiaryHandler{service: s}
 }
 
