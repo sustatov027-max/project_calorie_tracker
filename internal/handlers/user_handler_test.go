@@ -36,12 +36,12 @@ func TestRegisterUser(t *testing.T) {
 	}{
 		{
 			name:      "OK",
-			inputBody: `{"name": "Ivan","age": 19,"email": "vanya.sustatov@mail.ru","password": "2556625","weight": 76,"height": 184,"gender": "male","activeDays": 3}`,
+			inputBody: `{"name": "Ivan","age": 19,"email": "vanya.sustatov@mail.ru","password": "25566255","weight": 76,"height": 184,"gender": "male","activeDays": 3}`,
 			inputUser: inputUser{
 				Name:       "Ivan",
 				Age:        19,
 				Email:      "vanya.sustatov@mail.ru",
-				Password:   "2556625",
+				Password:   "25566255",
 				Weight:     76,
 				Height:     184,
 				Gender:     "male",
@@ -63,6 +63,23 @@ func TestRegisterUser(t *testing.T) {
 			},
 			expectedStatusCode:  201,
 			expectedRequestBody: `{"ID":1,"Name":"Ivan","Age":19,"Email":"vanya.sustatov@mail.ru","Weight":76,"Height":184,"Gender":"male","ActiveDays":3, "CaloriesNorm":2950.16}`,
+		},
+		{
+			name:      "Empty name",
+			inputBody: `{"name": "","age": 19,"email": "vanya.sustatov@mail.ru","password": "25566255","weight": 76,"height": 184,"gender": "male","activeDays": 3}`,
+			inputUser: inputUser{
+				Name:       "",
+				Age:        19,
+				Email:      "vanya.sustatov@mail.ru",
+				Password:   "25566255",
+				Weight:     76,
+				Height:     184,
+				Gender:     "male",
+				ActiveDays: 3,
+			},
+			mockBehavior:        func(s *mock_serv.MockUserServ, user inputUser) {},
+			expectedStatusCode:  400,
+			expectedRequestBody: `{"Name":"must be at least 2 characters"}`,
 		},
 	}
 

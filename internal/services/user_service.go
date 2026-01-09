@@ -26,25 +26,6 @@ func NewUserService(r UserRepo) *UserService {
 }
 
 func (s *UserService) RegisterUser(name string, age int, email string, password string, weight float64, height float64, gender string, activeDays int) (models.User, error) {
-	if name == "" {
-		return models.User{}, errors.New("name must not be empty")
-	}
-	if age <= 0 || age > 110 {
-		return models.User{}, errors.New("age must be > 0 and <= 110")
-	}
-	if email == "" {
-		return models.User{}, errors.New("email must not be empty")
-	}
-	if password == "" {
-		return models.User{}, errors.New("password must not be empty")
-	}
-	if weight <= 0 {
-		return models.User{}, errors.New("weight must be greater than 0")
-	}
-	if height <= 0 {
-		return models.User{}, errors.New("height must be greater than 0")
-	}
-
 	passwordHash, err := utils.HashPassword(password)
 	if err != nil {
 		return models.User{}, err

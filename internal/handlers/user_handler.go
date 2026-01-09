@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"project_calorie_tracker/internal/middlewares"
 	"project_calorie_tracker/internal/models"
+	"project_calorie_tracker/internal/validation"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,6 +16,8 @@ func RegisterUserRoutes(r *gin.Engine, h *UserHandler) {
 	r.POST("/auth/login", h.LoginUser)
 	r.GET("/me", middlewares.AuthMiddleware, h.GetUser)
 }
+
+var validator = validation.NewValidator()
 
 type UserServ interface {
 	RegisterUser(name string, age int, email string, password string, weight float64, height float64, gender string, activeDays int) (models.User, error)
@@ -31,14 +34,14 @@ func NewUserHandler(s UserServ) *UserHandler {
 }
 
 type RequestUserBody struct {
-	Name       string  `json:"name"`
-	Age        int     `json:"age"`
-	Email      string  `json:"email"`
-	Password   string  `json:"password"`
-	Weight     float64 `json:"weight"`
-	Height     float64 `json:"height"`
+	Name       string  `json:"name" validate:"min=2"`
+	Age        int     `json:"age" validate:"min=1,max=120"`
+	Email      string  `json:"email" validate:"email"`
+	Password   string  `json:"password" validate:"min=8"`
+	Weight     float64 `json:"weight" validate:"gt=0"`
+	Height     float64 `json:"height" validate:"gt=0"`
 	Gender     string  `json:"gender"`
-	ActiveDays int     `json:"activeDays"`
+	ActiveDays int     `json:"activeDays" validate:"min=1,max=7"`
 }
 
 func (h *UserHandler) RegisterUser(ctx *gin.Context) {
@@ -47,6 +50,12 @@ func (h *UserHandler) RegisterUser(ctx *gin.Context) {
 	err := ctx.ShouldBindJSON(&body)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, map[string]string{"Error read request body": err.Error()})
+		return
+	}
+
+	validationErrors := validator.Validate(&body)
+	if len(validationErrors) != 0 {
+		ctx.IndentedJSON(http.StatusBadRequest, validationErrors)
 		return
 	}
 
