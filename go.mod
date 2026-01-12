@@ -1,4 +1,4 @@
-module project_calorie_tracker
+module github.com/sustatov027-max/project_calorie_tracker
 
 go 1.25.3
 
