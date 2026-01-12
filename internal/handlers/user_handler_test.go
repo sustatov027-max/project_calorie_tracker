@@ -3,8 +3,8 @@ package handlers
 import (
 	"bytes"
 	mock_serv "github.com/sustatov027-max/project_calorie_tracker/internal/handlers/mock"
+	"github.com/sustatov027-max/project_calorie_tracker/internal/models"
 	"net/http/httptest"
-	"project_calorie_tracker/internal/models"
 	"testing"
 
 	"github.com/gin-gonic/gin"
