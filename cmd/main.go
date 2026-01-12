@@ -1,20 +1,19 @@
 package main
 
 import (
+	"github.com/sustatov027-max/project_calorie_tracker/internal/handlers"
+	"github.com/sustatov027-max/project_calorie_tracker/internal/repositories"
+	"github.com/sustatov027-max/project_calorie_tracker/internal/services"
+	"github.com/sustatov027-max/project_calorie_tracker/pkg/database"
 	"log"
-	"project_calorie_tracker/internal/handlers"
-	"project_calorie_tracker/internal/repositories"
-	"project_calorie_tracker/internal/services"
-	"project_calorie_tracker/pkg/database"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
 
-
-func init(){
+func init() {
 	err := godotenv.Load(".env")
-	if err != nil{
+	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
 }

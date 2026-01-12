@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"bytes"
+	mock_serv "github.com/sustatov027-max/project_calorie_tracker/internal/handlers/mock"
 	"net/http/httptest"
-	mock_serv "project_calorie_tracker/internal/handlers/mock"
 	"project_calorie_tracker/internal/models"
 	"testing"
 

@@ -2,10 +2,10 @@ package services
 
 import (
 	"errors"
+	"github.com/sustatov027-max/project_calorie_tracker/internal/models"
+	"github.com/sustatov027-max/project_calorie_tracker/pkg/utils"
 	"math"
 	"os"
-	"project_calorie_tracker/internal/models"
-	"project_calorie_tracker/pkg/utils"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"

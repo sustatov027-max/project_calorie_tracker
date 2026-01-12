@@ -1,9 +1,9 @@
 package handlers
 
 import (
+	"github.com/sustatov027-max/project_calorie_tracker/internal/middlewares"
+	"github.com/sustatov027-max/project_calorie_tracker/internal/models"
 	"net/http"
-	"project_calorie_tracker/internal/middlewares"
-	"project_calorie_tracker/internal/models"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -16,7 +16,7 @@ func RegisterProductRoutes(r *gin.Engine, h *ProductHandler) {
 	r.PUT("/products/:id", middlewares.AuthMiddleware, h.UpdateProduct)
 }
 
-type ProductServ interface{
+type ProductServ interface {
 	CreateProduct(name string, calories float64, proteins float64, fats float64, carbohydrates float64) (models.Product, error)
 	GetAllProducts() ([]models.Product, error)
 	DeleteProduct(id string) error
@@ -24,11 +24,11 @@ type ProductServ interface{
 	GetProductByID(id int) (models.Product, error)
 }
 
-type ProductHandler struct{
+type ProductHandler struct {
 	service ProductServ
 }
 
-func NewProductHandler(s ProductServ) *ProductHandler{
+func NewProductHandler(s ProductServ) *ProductHandler {
 	return &ProductHandler{service: s}
 }
 
@@ -84,7 +84,7 @@ func (h *ProductHandler) UpdateProduct(ctx *gin.Context) {
 	var body RequestProductBody
 	idParam := ctx.Param("id")
 	id, err := strconv.Atoi(idParam)
-	if err != nil{
+	if err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, map[string]string{"Error read id": err.Error()})
 		return
 	}

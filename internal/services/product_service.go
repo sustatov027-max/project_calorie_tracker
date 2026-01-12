@@ -2,8 +2,8 @@ package services
 
 import (
 	"errors"
+	"github.com/sustatov027-max/project_calorie_tracker/internal/models"
 	"math"
-	"project_calorie_tracker/internal/models"
 	"time"
 )
 
