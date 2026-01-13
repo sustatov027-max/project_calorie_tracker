@@ -7,4 +7,22 @@ services:
       POSTGRES_PASSWORD: "2556625"
       POSTGRES_DB: "tracker_calories"
     ports:
-      - 5433:5432
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    restart: always
+    environment:
+      DB_CONFIG: "host=pg user=IvanSuslov password=2556625 dbname=tracker_calories port=5432 sslmode=disable"
+      COST: "14"
+      SECRET: "tykcrykhcf54xjide5475tg"
+      PORT: "8080"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - pg
+
+volumes:
+  postgres_data:
