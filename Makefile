@@ -2,9 +2,9 @@
 
 dev: db-up
 	set DB_CONFIG=host=localhost user=IvanSuslov password=2556625 dbname=tracker_calories port=5433 sslmode=disable && \
-	set COST=14 && \
+	set COST=14&& \
 	set SECRET=tykcrykhcf54xjide5475tg && \
-	set PORT=8080 && \
+	set PORT=8080&& \
 	go run cmd/main.go
 
 db-up:
@@ -18,7 +18,7 @@ db-down:
 	docker-compose down
 
 test:
-	go test ./...
+	go test ./... 
 
 help:
 	@echo Commands:

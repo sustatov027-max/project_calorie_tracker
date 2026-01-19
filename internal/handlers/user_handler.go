@@ -41,7 +41,7 @@ type RequestUserBody struct {
 	Weight     float64 `json:"weight" validate:"gt=0"`
 	Height     float64 `json:"height" validate:"gt=0"`
 	Gender     string  `json:"gender"`
-	ActiveDays int     `json:"activeDays" validate:"min=1,max=7"`
+	ActiveDays int     `json:"activeDays" validate:"min=0,max=7"`
 }
 
 func (h *UserHandler) RegisterUser(ctx *gin.Context) {
