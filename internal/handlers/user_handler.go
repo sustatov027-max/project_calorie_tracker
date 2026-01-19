@@ -1,10 +1,11 @@
 package handlers
 
 import (
+	"net/http"
+
 	"github.com/sustatov027-max/project_calorie_tracker/internal/middlewares"
 	"github.com/sustatov027-max/project_calorie_tracker/internal/models"
 	"github.com/sustatov027-max/project_calorie_tracker/internal/validation"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
