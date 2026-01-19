@@ -20,7 +20,8 @@ func init() {
 
 func main() {
 	database.Init()
-	server := gin.Default()
+	server := gin.New()
+	server.Use(gin.Logger())
 
 	userRepo := repositories.UserRepository{}
 	userService := services.NewUserService(&userRepo)

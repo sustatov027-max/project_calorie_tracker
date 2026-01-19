@@ -8,7 +8,7 @@ dev: db-up
 	go run cmd/main.go
 
 db-up:
-	docker-compose up -d
+	docker-compose up
 	@echo PostgreSQL started
 	@echo Port: 5433
 	@echo Database: tracker_calories
