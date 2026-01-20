@@ -85,7 +85,7 @@ func (h *UserHandler) LoginUser(ctx *gin.Context) {
 
 	token, err := h.service.LoginUser(body.Email, body.Password)
 	if err != nil {
-		ctx.IndentedJSON(http.StatusInternalServerError, map[string]string{"Error login user": err.Error()})
+		ctx.IndentedJSON(401, map[string]string{"Error login user": err.Error()})
 		return
 	}
 
