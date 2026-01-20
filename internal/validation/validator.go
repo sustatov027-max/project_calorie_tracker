@@ -44,6 +44,14 @@ func (v *Validator) formatError(fieldErr validator.FieldError) string {
 		return fmt.Sprintf("must be maximum %s characters", fieldErr.Param())
 	case "password":
 		return "must min 8 characters"
+	case "gte":
+		return fmt.Sprintf("must be greater or equal to %s", fieldErr.Param())
+	case "lte":
+		return fmt.Sprintf("must be less or equal to %s", fieldErr.Param())
+	case "gt":
+		return fmt.Sprintf("must be greater than %s", fieldErr.Param())
+	case "lt":
+		return fmt.Sprintf("must be less than %s", fieldErr.Param())
 	default:
 		return "is invalid"
 	}

@@ -78,21 +78,21 @@ func TestRegisterUser(t *testing.T) {
 			request:    `{"name":"Test","age":19,"email":"test@mail.ru","password":"12345678","weight":-1,"height":184,"gender":"male","activeDays":3}`,
 			mockSetup:  func(s *mock_serv.MockUserServ) {},
 			wantStatus: 400,
-			wantBody:   `{"Weight":"is invalid"}`,
+			wantBody:   `{"Weight":"must be greater than 0"}`,
 		},
 		{
 			name:       "Invalid height",
 			request:    `{"name":"Test","age":19,"email":"test@mail.ru","password":"12345678","weight":76,"height":-1,"gender":"male","activeDays":3}`,
 			mockSetup:  func(s *mock_serv.MockUserServ) {},
 			wantStatus: 400,
-			wantBody:   `{"Height":"is invalid"}`,
+			wantBody:   `{"Height":"must be greater than 0"}`,
 		},
 		{
 			name:       "Invalid activeDays",
 			request:    `{"name":"Test","age":19,"email":"test@mail.ru","password":"12345678","weight":76,"height":184,"gender":"male","activeDays":-1}`,
 			mockSetup:  func(s *mock_serv.MockUserServ) {},
 			wantStatus: 400,
-			wantBody:   `{"ActiveDays":"must be at least 0 characters"}`,
+			wantBody:   `{"ActiveDays":"must be greater or equal to 0"}`,
 		},
 	}
 

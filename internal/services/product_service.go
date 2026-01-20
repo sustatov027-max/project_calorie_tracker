@@ -24,22 +24,6 @@ func NewProductService(r ProductRepo) *ProductService {
 }
 
 func (s *ProductService) CreateProduct(name string, calories float64, proteins float64, fats float64, carbohydrates float64) (models.Product, error) {
-	if name == "" {
-		return models.Product{}, errors.New("product name is required")
-	}
-	if calories < 0 {
-		return models.Product{}, errors.New("calories must be >= 0")
-	}
-	if proteins < 0 {
-		return models.Product{}, errors.New("proteins must be >= 0")
-	}
-	if fats < 0 {
-		return models.Product{}, errors.New("fats must be >= 0")
-	}
-	if carbohydrates < 0 {
-		return models.Product{}, errors.New("carbohydrates must be >= 0")
-	}
-
 	newProduct := models.Product{ID: 0, Name: name, Calories: calories, Proteins: proteins, Fats: fats, Carbohydrates: carbohydrates, CreatedAt: time.Now().Local()}
 
 	err := s.postgres.InsertProduct(&newProduct)

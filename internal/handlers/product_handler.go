@@ -1,13 +1,16 @@
 package handlers
 
 import (
-	"github.com/sustatov027-max/project_calorie_tracker/internal/middlewares"
-	"github.com/sustatov027-max/project_calorie_tracker/internal/models"
 	"net/http"
 	"strconv"
 
+	"github.com/sustatov027-max/project_calorie_tracker/internal/middlewares"
+	"github.com/sustatov027-max/project_calorie_tracker/internal/models"
+
 	"github.com/gin-gonic/gin"
 )
+
+//go:generate mockgen -source=product_handler.go -destination=mock/mock_product_services.go -package=mock
 
 func RegisterProductRoutes(r *gin.Engine, h *ProductHandler) {
 	r.POST("/products", middlewares.AuthMiddleware, h.CreateProduct)
@@ -33,11 +36,11 @@ func NewProductHandler(s ProductServ) *ProductHandler {
 }
 
 type RequestProductBody struct {
-	Name          string  `json:"name"`
-	Calories      float64 `json:"calories"`
-	Proteins      float64 `json:"proteins"`
-	Fats          float64 `json:"fats"`
-	Carbohydrates float64 `json:"carbohydrates"`
+	Name          string  `json:"name" validate:"min=2"`
+	Calories      float64 `json:"calories" validate:"gte=0"`
+	Proteins      float64 `json:"proteins" validate:"gte=0"`
+	Fats          float64 `json:"fats" validate:"gte=0"`
+	Carbohydrates float64 `json:"carbohydrates" validate:"gte=0"`
 }
 
 func (h *ProductHandler) CreateProduct(ctx *gin.Context) {
@@ -46,6 +49,12 @@ func (h *ProductHandler) CreateProduct(ctx *gin.Context) {
 	err := ctx.ShouldBindJSON(&body)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, map[string]string{"Error read request body": err.Error()})
+		return
+	}
+
+	validationErrors := validator.Validate(&body)
+	if len(validationErrors) != 0 {
+		ctx.IndentedJSON(http.StatusBadRequest, validationErrors)
 		return
 	}
 

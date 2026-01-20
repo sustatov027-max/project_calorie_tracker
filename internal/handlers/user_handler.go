@@ -36,13 +36,13 @@ func NewUserHandler(s UserServ) *UserHandler {
 
 type RequestUserBody struct {
 	Name       string  `json:"name" validate:"min=2"`
-	Age        int     `json:"age" validate:"min=1,max=120"`
+	Age        int     `json:"age" validate:"gte=1,lte=120"`
 	Email      string  `json:"email" validate:"email"`
 	Password   string  `json:"password" validate:"min=8"`
 	Weight     float64 `json:"weight" validate:"gt=0"`
 	Height     float64 `json:"height" validate:"gt=0"`
 	Gender     string  `json:"gender"`
-	ActiveDays int     `json:"activeDays" validate:"min=0,max=7"`
+	ActiveDays int     `json:"activeDays" validate:"gte=0,lte=7"`
 }
 
 func (h *UserHandler) RegisterUser(ctx *gin.Context) {
