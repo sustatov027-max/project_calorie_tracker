@@ -39,52 +39,218 @@ PORT=8080
     This sets up environment variables and starts the Go server.
 
 ### Available Commands
-* ```make dev``` - Start both database and application
-* ```make db-up``` - Start only PostgreSQL database
-* ```make db-down``` - Stop the database
-* ```make test``` - Run Go tests
+* `make dev` - Start both database and application
+* `make db-up` - Start only PostgreSQL database
+* `make db-down` - Stop the database
+* `make test` - Run Go tests
 
 ### API Endpoint : http://localhost:8080
 
 ## Structure
 ```
-├── app
-│   ├── app.go
-│   ├── handler          // Our API core handlers
-│   │   ├── common.go    // Common response functions
-│   │   ├── projects.go  // APIs for Project model
-│   │   └── tasks.go     // APIs for Task model
-│   └── model
-│       └── model.go     // Models for our application
-├── config
-│   └── config.go        // Configuration
-└── main.go
+tracker-calories/
+├── cmd/
+│   └── main.go      # Application entry point
+├── internal/
+│   ├── handlers/
+│   │   ├── diary_handler.go          # Diary handlers
+│   │   ├── product_handler.go        # Product handlers
+│   │   ├── product_handler_test.go   # Unit tests for product
+│   │   ├── user_handler.go           # User handlers
+│   │   ├── user_handler_test.go      # Unit tests for user
+│   │   └── mock/
+│   │       ├── mock_product_services.go      # Mocks for product_services
+│   │       └── mock_user_service.go          # Mocks for user_services
+│   ├── models/
+│   │   ├── daySummary.go    # Summary model
+│   │   ├── mealLog.go       # MealLog model
+│   │   ├── product.go       # Product model
+│   │   └── user.go          # User model
+│   ├── repositories/
+│   │   ├── diary_repository.go     # Working with the DB: diary
+│   │   ├── product_repository.go   # Working with the DB: product
+│   │   └── user_repository.go      # Working with the DB: user
+│   ├── services/
+│   │   ├── diary_service.go    # Business logic of diary
+│   │   ├── user_service.go     # Business logic of users
+│   │   └── product_service.go  # Business logic of products
+│   ├── validation/
+│   │   ├── validator.go        # Validation of input data
+│   └── middlewares/
+│       └── authMiddleware.go   # Middleware authentication
+├── pkg/
+│   ├── database/
+│   │   └── db.go            # Initializing the connection to the database
+│   └── utils/
+│       ├── context.go        # Gin context util
+│       └── hashPasword.go    # Password hash utilities
+├── Dockerfile           # Dockerfile of the application
+├── docker-compose.yml   # Docker Compose config
+├── .env                 # Local environment variables (in .gitignore)
+├── .gitignore
+├── go.mod
+├── go.sum
+├── Makefile
+└── README.md
 ```
 
 ## API
 
-#### /projects
-* `GET` : Get all projects
-* `POST` : Create a new project
+### Authentication
+- **POST** `/auth/register` - Register a new user
+- **POST** `/auth/login` - Login user
 
-#### /projects/:title
-* `GET` : Get a project
-* `PUT` : Update a project
-* `DELETE` : Delete a project
+### User Profile
+- **GET** `/me` - Get current user profile (Auth required)
 
-#### /projects/:title/archive
-* `PUT` : Archive a project
-* `DELETE` : Restore a project 
+### Food Diary (Meals)
+- **GET** `/diary` - Get all meals for current day (Auth required)
+- **POST** `/diary` - Add a new meal to diary (Auth required)
+- **PUT** `/diary/:id` - Update specific meal (Auth required)
+- **DELETE** `/diary/:id` - Remove meal from diary (Auth required)
 
-#### /projects/:title/tasks
-* `GET` : Get all tasks of a project
-* `POST` : Create a new task in a project
+### Diary Analytics
+- **GET** `/diary/summary` - Get daily calorie summary (Auth required)
 
-#### /projects/:title/tasks/:id
-* `GET` : Get a task of a project
-* `PUT` : Update a task of a project
-* `DELETE` : Delete a task of a project
+### Food Products
+- **GET** `/products` - Get all food products (Auth required)
+- **POST** `/products` - Create new food product (Auth required)
+- **PUT** `/products/:id` - Update food product (Auth required)
+- **DELETE** `/products/:id` - Delete food product (Auth required)
 
-#### /projects/:title/tasks/:id/complete
-* `PUT` : Complete a task of a project
-* `DELETE` : Undo a task of a project
+---
+
+**Note:** All endpoints except `/auth/*` require JWT token in the `Authorization` header as `Bearer <token>`.
+
+## Example requests
+1. Register User
+    ```bash
+    curl -X POST http://localhost:8080/auth/register \
+    -H "Content-Type: application/json" \
+    -d '{"name":"Test","age":19,"email":"test@mail.ru","password":"12345678","weight":76,"height":184,"gender":"male","activeDays":3}'
+    ```
+    Response:
+
+    ```json
+    {
+        "id": 1,
+	    "name": "Test",
+		"age": 19,
+		"email": "test@mail.ru",
+		"weight": 76,
+		"height": 184,
+		"gender": "male",
+		"activeDays": 3,
+		"caloriesNorm": 2950.16
+    }
+    ```
+2. Login User
+    ```bash
+    curl -X POST http://localhost:8080/auth/login \
+    -H "Content-Type: application/json" \
+    -d '{"email": "test@mail.ru", "password": "12345678"}'
+    ```
+    Response:
+
+    ```json
+    {
+        "token":"mock-jwt-token-12345",
+        "token_type":"Bearer"
+    }
+    ```
+3. Get User Profile (Auth Required)
+    ```bash
+    curl -X GET http://localhost:8080/me \
+    -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    ```
+    Response:
+
+    ```json
+    {
+        "id": 1,
+        "name": "Test",
+        "age": 19,
+        "email": "test@mail.ru",
+        "weight": 76,
+        "height": 184,
+        "gender": "male",
+        "activeDays": 3,
+        "caloriesNorm": 2950.16
+    }
+    ```
+4. Add Meal to Diary
+    ```bash
+    curl -X POST http://localhost:8080/diary \
+    -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+    -H "Content-Type: application/json" \
+    -d '{"product_id": 123, "gramms": 100}'
+    ```
+    Response:
+
+    ```json
+    {
+    "id": 1,
+    "user_id": 1,
+    "product_id": 123,
+    "product": ...,
+    "gramms": 100,
+    "created_at": "2024-01-22T13:45:00Z"
+    }
+    ```
+5. Get Today's Meals
+    ```bash
+    curl -X GET http://localhost:8080/diary \
+    -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    ```
+    Response:
+
+    ```json
+    [
+        {
+            "id": 1,
+            "user_id": 1,
+            "product_id": 123,
+            "product": [...],
+            "gramms": 100,
+            "created_at": "2024-01-22T13:45:00Z"
+        }
+    ]
+    ```
+6. Create Food Product
+    ```bash
+    curl -X POST http://localhost:8080/products \
+    -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+    -H "Content-Type: application/json" \
+    -d '{"name": "Avocado", "calories": 160, "proteins": 2, "fats": 15, "carbohydrates": 9}'
+    ```
+    Response:
+
+    ```json
+    {
+    "id": 124,
+    "name": "Avocado",
+    "calories": 160,
+    "proteins": 2,
+    "fats": 15,
+    "carbohydrates": 9,
+    "created_at": "2024-01-22T15:00:00Z"
+    }
+    ```
+7. Get Daily Summary
+    ```bash
+    curl -X GET http://localhost:8080/diary/summary \
+    -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    ```
+    Response:
+
+    ```json
+    {
+        "meals": [...],
+        "total_calories": 1850,
+        "total_proteins": 83,
+        "total_fats": 57,
+        "total_carbs": 188,
+        "daily_norm": 2100,
+        "remaining": 350
+    }
+    ```
