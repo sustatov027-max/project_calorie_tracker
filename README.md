@@ -6,24 +6,24 @@ A Go service using the **Gin** framework and the **Gorm** ORM. The application a
 ## Demonstration
 <table>
   <tr>
-    <td style="vertical-align: top; width: 100%; padding: 10px;">
-      <img src=".github/img/Registration.bmp" alt="Registartion" style="width: 100%; height: 380px; object-fit: contain;">
+    <td style="vertical-align: top; width: 100%;">
+      <img src=".github/img/Registration.bmp" alt="Registartion" style="width: 100%; height: 100%; object-fit: contain;">
     </td>
-    <td style="vertical-align: top; width: 100%; padding: 10px;">
-      <img src=".github/img/Login.bmp" alt="Login" style="width: 100%; height: 380px; object-fit: contain;">
-    </td>
-  </tr>
-  <tr>
-    <td style="vertical-align: top; padding: 10px;">
-      <img src=".github/img/Create product.bmp" alt="Create product" style="width: 100%; height: 380px; object-fit: contain;">
-    </td>
-    <td style="vertical-align: top; padding: 10px;">
-      <img src=".github/img/Create meal.bmp" alt="Create meal" style="width: 100%; height: 380px; object-fit: contain;">
+    <td style="vertical-align: top; width: 100%;">
+      <img src=".github/img/Login.bmp" alt="Login" style="width: 100%; height: 100%; object-fit: contain;">
     </td>
   </tr>
   <tr>
-    <td style="vertical-align: top;" colspan="2" padding: 10px;>
-      <img src=".github/img/Summary meals.bmp" alt="Summary meal" style="width: 50%; height: 380px; object-fit: contain;">
+    <td style="vertical-align: top;">
+      <img src=".github/img/Create product.bmp" alt="Create product" style="width: 100%; height: 100%; object-fit: contain;">
+    </td>
+    <td style="vertical-align: top;">
+      <img src=".github/img/Create meal.bmp" alt="Create meal" style="width: 100%; height: 100%; object-fit: contain;">
+    </td>
+  </tr>
+  <tr>
+    <td style="vertical-align: top;" colspan="2">
+      <img src=".github/img/Summary meals.bmp" alt="Summary meal" style="width: 50%; height: 100%; object-fit: contain;">
     </td>
   </tr>
 </table>
