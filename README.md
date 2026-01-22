@@ -4,27 +4,29 @@ A Golang RESTful API application for calculating the daily calorie intake of a s
 A Go service using the **Gin** framework and the **Gorm** ORM. The application and the **PostgreSQL** database are run in **Docker** containers using **Docker Compose**. **Makefile** commands are used for building and managing the service.
 
 ## Demonstration
-<style>
-.aligned-images {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-}
-
-.aligned-images img {
-  width: 100%;
-  height: 200px;
-  object-fit: contain;
-}
-</style>
-
-<div class="aligned-images">
-  <img src=".github/img/Registration.bmp" alt="Registartion">
-  <img src=".github/img/Login.bmp" alt="Login">
-  <img src=".github/img/Create product.bmp" alt="Create product">
-  <img src=".github/img/Create meal.bmp" alt="Create meal">
-  <img src=".github/img/Summary meals.bmp" alt="Summary meal">
-</div>
+<table>
+  <tr>
+    <td style="vertical-align: top; width: 70%; padding: 10px;">
+      <img src=".github/img/Registration.bmp" alt="Registartion" style="width: 90%; height: 400px; object-fit: contain;">
+    </td>
+    <td style="vertical-align: top; width: 70%; padding: 10px;">
+      <img src=".github/img/Login.bmp" alt="Login" style="width: 90%; height: 400px; object-fit: contain;">
+    </td>
+  </tr>
+  <tr>
+    <td style="vertical-align: top; padding: 10px;">
+      <img src=".github/img/Create product.bmp" alt="Create product" style="width: 90%; height: 400px; object-fit: contain;">
+    </td>
+    <td style="vertical-align: top; padding: 10px;">
+      <img src=".github/img/Create meal.bmp" alt="Create meal" style="width: 90%; height: 400px; object-fit: contain;">
+    </td>
+  </tr>
+  <tr>
+    <td style="vertical-align: top;" colspan="2" padding: 10px;>
+      <img src=".github/img/Summary meals.bmp" alt="Summary meal" style="width: 50%; height: 400px; object-fit: contain;">
+    </td>
+  </tr>
+</table>
 
 ## Installation & Run
 ### Prerequisites
