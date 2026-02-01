@@ -42,10 +42,14 @@ git clone https://github.com/sustatov027-max/project_calorie_tracker.git
 ### Configuration
 Before running the service, you need to configure the database connection. The configuration is set via environment variables in the **.env** file. Create a **.env** file in the project root and specify your values for the PostgreSQL connection and other parameters. Example file:
 ```.env
-DB_CONFIG="host=localhost user=your_user password=your_password dbname=tracker_calories port=5433 sslmode=disable"
-COST=14
-SECRET="your_secret_key_here"
-PORT=8080
+POSTGRES_USER=your_user
+POSTGRES_PASSWORD=yor_password
+POSTGRES_DB=tracker_calories
+DB_HOST=pg
+DB_PORT=your_db_port
+APP_COST=yor_cost
+APP_SECRET=your_secret
+APP_PORT=your_app_port
 ```
 
 
