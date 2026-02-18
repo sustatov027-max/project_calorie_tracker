@@ -1,24 +1,23 @@
 package main
 
 import (
+	"log"
+
+	"github.com/sustatov027-max/project_calorie_tracker/internal/config"
 	"github.com/sustatov027-max/project_calorie_tracker/internal/handlers"
 	"github.com/sustatov027-max/project_calorie_tracker/internal/repositories"
 	"github.com/sustatov027-max/project_calorie_tracker/internal/services"
 	"github.com/sustatov027-max/project_calorie_tracker/pkg/database"
-	"log"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 )
 
-func init() {
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-}
-
 func main() {
+	cfg, err := config.Load()
+	if err != nil {
+		log.Fatalf("configuration error: %v", err)
+	}
+
 	database.Init()
 	server := gin.New()
 	server.Use(gin.Logger())
@@ -39,5 +38,7 @@ func main() {
 	handlers.RegisterUserRoutes(server, userHandler)
 	handlers.RegisterDiaryRoutes(server, diaryHandler)
 
-	server.Run()
+	if err := server.Run(":" + cfg.Port); err != nil {
+		log.Fatalf("server startup error: %v", err)
+	}
 }

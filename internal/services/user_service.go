@@ -2,10 +2,10 @@ package services
 
 import (
 	"errors"
+	"github.com/sustatov027-max/project_calorie_tracker/internal/config"
 	"github.com/sustatov027-max/project_calorie_tracker/internal/models"
 	"github.com/sustatov027-max/project_calorie_tracker/pkg/utils"
 	"math"
-	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -94,7 +94,7 @@ func (s *UserService) LoginUser(email string, password string) (string, error) {
 		"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
 	})
 
-	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET")))
+	tokenString, err := token.SignedString([]byte(config.MustGet().Secret))
 	if err != nil {
 		return "", errors.New("error to create token")
 	}

@@ -47,9 +47,9 @@ POSTGRES_PASSWORD=your_password
 POSTGRES_DB=tracker_calories
 DB_HOST=pg
 DB_PORT=your_db_port
-APP_COST=your_cost
-APP_SECRET=your_secret
-APP_PORT=your_app_port
+COST=your_cost
+SECRET=your_secret
+PORT=your_app_port
 ```
 
 
@@ -58,7 +58,7 @@ APP_PORT=your_app_port
     ```bash
     make db-up
     ```
-    This launches PostgreSQL on port 5433 with database tracker_calories.
+    This launches PostgreSQL on port defined by DB_PORT with database tracker_calories.
 2. Run the application:
     ```bash
     make dev
