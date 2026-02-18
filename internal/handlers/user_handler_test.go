@@ -157,7 +157,7 @@ func TestLoginUser(t *testing.T) {
 				s.EXPECT().LoginUser(input.Email, input.Password).Return("", errors.New("invalid credentials"))
 			},
 			wantStatus: 401,
-			wantBody:   `{"Error login user": "invalid credentials"}`,
+			wantBody:   `{"error": "invalid credentials"}`,
 		},
 		{
 			name:    "Invalid JSON",
@@ -167,7 +167,7 @@ func TestLoginUser(t *testing.T) {
 					Return("", errors.New("json parse error")).AnyTimes()
 			},
 			wantStatus: 401,
-			wantBody:   `{"Error login user": "json parse error"}`,
+			wantBody:   `{"error": "json parse error"}`,
 		},
 	}
 

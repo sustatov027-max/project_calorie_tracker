@@ -26,9 +26,9 @@ func NewDiaryService(r DiaryRepo) *DiaryService {
 var productService = NewProductService(&repositories.ProductRepository{})
 var userService = NewUserService(&repositories.UserRepository{})
 
-func (s *DiaryService) CreateMeal(userID int, productID int, gramms float64) (models.MealLog, error) {
-	if gramms <= 0 {
-		return models.MealLog{}, errors.New("gramms must be greater than 0")
+func (s *DiaryService) CreateMeal(userID int, productID int, grams float64) (models.MealLog, error) {
+	if grams <= 0 {
+		return models.MealLog{}, errors.New("grams must be greater than 0")
 	}
 	if productID <= 0 {
 		return models.MealLog{}, errors.New("productID must be greater than 0")
@@ -38,7 +38,7 @@ func (s *DiaryService) CreateMeal(userID int, productID int, gramms float64) (mo
 	if err != nil {
 		return models.MealLog{}, err
 	}
-	createdMeal := models.MealLog{UserID: userID, ProductID: productID, Product: productByID, Gramms: gramms, CreatedAt: time.Now()}
+	createdMeal := models.MealLog{UserID: userID, ProductID: productID, Product: productByID, Grams: grams, CreatedAt: time.Now()}
 
 	err = s.postgres.InsertMeal(&createdMeal)
 	if err != nil {
@@ -64,9 +64,9 @@ func (s *DiaryService) DeleteMeal(userID int, id string) error {
 	return s.postgres.DeleteMeal(userID, id)
 }
 
-func (s *DiaryService) UpdateMeal(userID int, id string, productID int, gramms float64) (models.MealLog, error) {
-	if gramms <= 0 {
-		return models.MealLog{}, errors.New("gramms must be greater than 0")
+func (s *DiaryService) UpdateMeal(userID int, id string, productID int, grams float64) (models.MealLog, error) {
+	if grams <= 0 {
+		return models.MealLog{}, errors.New("grams must be greater than 0")
 	}
 	if productID <= 0 {
 		return models.MealLog{}, errors.New("productID must be greater than 0")
@@ -83,7 +83,7 @@ func (s *DiaryService) UpdateMeal(userID int, id string, productID int, gramms f
 	if err != nil {
 		return models.MealLog{}, err
 	}
-	updatedMeal := models.MealLog{ID: uint(idInt), ProductID: productID, Product: product, Gramms: gramms}
+	updatedMeal := models.MealLog{ID: uint(idInt), ProductID: productID, Product: product, Grams: grams}
 
 	return s.postgres.UpdateMeal(userID, &updatedMeal)
 }
@@ -97,7 +97,7 @@ func (s *DiaryService) Summary(userID int) (models.DaySummary, error) {
 	var daySummary models.DaySummary
 
 	for _, meal := range meals {
-		calories, proteins, fats, carbohydrates := productService.CalculateCPFC(meal.Product, meal.Gramms)
+		calories, proteins, fats, carbohydrates := productService.CalculateCPFC(meal.Product, meal.Grams)
 
 		daySummary.TotalCalories += calories
 		daySummary.TotalProteins += proteins
