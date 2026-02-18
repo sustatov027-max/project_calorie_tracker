@@ -14,21 +14,29 @@ import (
 var dbase *gorm.DB
 
 func Init() *gorm.DB {
+	if dbase != nil {
+		return dbase
+	}
+
 	dbHost := os.Getenv("DB_HOST")
-    dbPort := os.Getenv("DB_PORT")
-    dbUser := os.Getenv("POSTGRES_USER")
-    dbPassword := os.Getenv("POSTGRES_PASSWORD")
-    dbName := os.Getenv("POSTGRES_DB")
+	dbPort := os.Getenv("DB_PORT")
+	dbUser := os.Getenv("POSTGRES_USER")
+	dbPassword := os.Getenv("POSTGRES_PASSWORD")
+	dbName := os.Getenv("POSTGRES_DB")
 
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-        dbHost, dbPort, dbUser, dbPassword, dbName)
+		dbHost, dbPort, dbUser, dbPassword, dbName)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal("Error connect to database: ", err.Error())
 	}
 
-	db.AutoMigrate(&models.Product{}, &models.User{}, &models.MealLog{})
-	return db
+	if err := db.AutoMigrate(&models.Product{}, &models.User{}, &models.MealLog{}); err != nil {
+		log.Fatal("Error while migration: ", err.Error())
+	}
+
+	dbase = db
+	return dbase
 }
 
 func DB() *gorm.DB {
