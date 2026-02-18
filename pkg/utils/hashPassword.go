@@ -1,22 +1,15 @@
 package utils
 
 import (
-	"os"
-	"strconv"
-	"strings"
+	"github.com/sustatov027-max/project_calorie_tracker/internal/config"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 func HashPassword(password string) (string, error) {
-	costStr := os.Getenv("COST")
-	costStr = strings.TrimSpace(costStr)
+	cost := config.MustGet().Cost
 
-	costInt, err := strconv.Atoi(costStr)
-	if err != nil {
-		return "", err
-	}
-	passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), costInt)
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), cost)
 	if err != nil {
 		return "", err
 	}

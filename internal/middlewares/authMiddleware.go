@@ -2,11 +2,11 @@ package middlewares
 
 import (
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/sustatov027-max/project_calorie_tracker/internal/config"
 )
 
 func AuthMiddleware(ctx *gin.Context) {
@@ -14,7 +14,7 @@ func AuthMiddleware(ctx *gin.Context) {
 	tokenString = strings.ReplaceAll(tokenString, "Bearer ", "")
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
-		return []byte(os.Getenv("SECRET")), nil
+		return []byte(config.MustGet().Secret), nil
 	}, jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Alg()}))
 	if err != nil {
 		ctx.AbortWithStatus(http.StatusUnauthorized)

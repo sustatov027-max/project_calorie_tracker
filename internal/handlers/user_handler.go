@@ -50,7 +50,7 @@ func (h *UserHandler) RegisterUser(ctx *gin.Context) {
 
 	err := ctx.ShouldBindJSON(&body)
 	if err != nil {
-		ctx.IndentedJSON(http.StatusBadRequest, map[string]string{"Error read request body": err.Error()})
+		ctx.IndentedJSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 		return
 	}
 
@@ -62,7 +62,7 @@ func (h *UserHandler) RegisterUser(ctx *gin.Context) {
 
 	newUser, err := h.service.RegisterUser(body.Name, body.Age, body.Email, body.Password, body.Weight, body.Height, body.Gender, body.ActiveDays)
 	if err != nil {
-		ctx.IndentedJSON(http.StatusInternalServerError, map[string]string{"Error register user": err.Error()})
+		ctx.IndentedJSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
 	}
 
@@ -79,13 +79,13 @@ func (h *UserHandler) LoginUser(ctx *gin.Context) {
 
 	err := ctx.ShouldBindJSON(&body)
 	if err != nil {
-		ctx.IndentedJSON(http.StatusBadRequest, map[string]string{"Error read request body": err.Error()})
+		ctx.IndentedJSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 		return
 	}
 
 	token, err := h.service.LoginUser(body.Email, body.Password)
 	if err != nil {
-		ctx.IndentedJSON(401, map[string]string{"Error login user": err.Error()})
+		ctx.IndentedJSON(401, map[string]string{"error": err.Error()})
 		return
 	}
 
@@ -97,7 +97,7 @@ func (h *UserHandler) GetUser(ctx *gin.Context) {
 
 	user, err := h.service.GetUser(userID)
 	if err != nil {
-		ctx.IndentedJSON(http.StatusInternalServerError, map[string]string{"Error get user": err.Error()})
+		ctx.IndentedJSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
 	}
 

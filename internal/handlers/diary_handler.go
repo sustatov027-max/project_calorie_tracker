@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"github.com/sustatov027-max/project_calorie_tracker/internal/middlewares"
 	"github.com/sustatov027-max/project_calorie_tracker/internal/models"
 	"github.com/sustatov027-max/project_calorie_tracker/pkg/utils"
@@ -19,10 +20,10 @@ func RegisterDiaryRoutes(r *gin.Engine, h *DiaryHandler) {
 }
 
 type DiaryServ interface {
-	CreateMeal(userID int, productID int, gramms float64) (models.MealLog, error)
+	CreateMeal(userID int, productID int, grams float64) (models.MealLog, error)
 	GetAllMealsForDay(userID int, date time.Time) ([]models.MealLog, error)
 	DeleteMeal(userID int, id string) error
-	UpdateMeal(userID int, id string, productID int, gramms float64) (models.MealLog, error)
+	UpdateMeal(userID int, id string, productID int, grams float64) (models.MealLog, error)
 	Summary(userID int) (models.DaySummary, error)
 }
 
@@ -36,7 +37,26 @@ func NewDiaryHandler(s DiaryServ) *DiaryHandler {
 
 type requestBody struct {
 	ProductID int     `json:"product_id"`
-	Gramms    float64 `json:"gramms"`
+	Grams     float64 `json:"grams"`
+}
+
+func (r *requestBody) UnmarshalJSON(data []byte) error {
+	type Alias requestBody
+	aux := struct {
+		Alias
+		Gramms *float64 `json:"gramms"`
+	}{Alias: Alias(*r)}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	*r = requestBody(aux.Alias)
+	if aux.Gramms != nil {
+		r.Grams = *aux.Gramms
+	}
+
+	return nil
 }
 
 func (h *DiaryHandler) CreateMeal(ctx *gin.Context) {
@@ -54,7 +74,7 @@ func (h *DiaryHandler) CreateMeal(ctx *gin.Context) {
 		return
 	}
 
-	createdMeal, err := h.service.CreateMeal(userID, body.ProductID, body.Gramms)
+	createdMeal, err := h.service.CreateMeal(userID, body.ProductID, body.Grams)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
@@ -123,11 +143,11 @@ func (h *DiaryHandler) UpdateMeal(ctx *gin.Context) {
 	var body requestBody
 	err = ctx.ShouldBindJSON(&body)
 	if err != nil {
-		ctx.IndentedJSON(http.StatusBadRequest, map[string]string{"Error read request body": err.Error()})
+		ctx.IndentedJSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 		return
 	}
 
-	updatedMeal, err := h.service.UpdateMeal(userID, id, body.ProductID, body.Gramms)
+	updatedMeal, err := h.service.UpdateMeal(userID, id, body.ProductID, body.Grams)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 		return

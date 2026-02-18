@@ -3,8 +3,8 @@ package database
 import (
 	"fmt"
 	"log"
-	"os"
 
+	"github.com/sustatov027-max/project_calorie_tracker/internal/config"
 	"github.com/sustatov027-max/project_calorie_tracker/internal/models"
 
 	"gorm.io/driver/postgres"
@@ -14,21 +14,25 @@ import (
 var dbase *gorm.DB
 
 func Init() *gorm.DB {
-	dbHost := os.Getenv("DB_HOST")
-    dbPort := os.Getenv("DB_PORT")
-    dbUser := os.Getenv("POSTGRES_USER")
-    dbPassword := os.Getenv("POSTGRES_PASSWORD")
-    dbName := os.Getenv("POSTGRES_DB")
+	if dbase != nil {
+		return dbase
+	}
+
+	cfg := config.MustGet()
 
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-        dbHost, dbPort, dbUser, dbPassword, dbName)
+		cfg.DBHost, cfg.DBPort, cfg.PostgresUser, cfg.PostgresPassword, cfg.PostgresDB)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal("Error connect to database: ", err.Error())
 	}
 
-	db.AutoMigrate(&models.Product{}, &models.User{}, &models.MealLog{})
-	return db
+	if err := db.AutoMigrate(&models.Product{}, &models.User{}, &models.MealLog{}); err != nil {
+		log.Fatal("Error while migration: ", err.Error())
+	}
+
+	dbase = db
+	return dbase
 }
 
 func DB() *gorm.DB {

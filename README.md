@@ -1,283 +1,221 @@
-# Calorie_Tracker RESTful-API
-A Golang RESTful API application for calculating the daily calorie intake of a specific user
+# Calorie Tracker RESTful API
+A Golang RESTful API for tracking meals and calculating daily calorie intake.
 
-A Go service using the **Gin** framework and the **Gorm** ORM. The application and the **PostgreSQL** database are run in **Docker** containers using **Docker Compose**. **Makefile** commands are used for building and managing the service.
+The service uses **Gin** + **Gorm** with **PostgreSQL** in **Docker Compose**.
 
 ## Demonstration
 <table>
   <tr>
     <td style="vertical-align: top; width: 100%;">
-      <img src=".github/img/Registration.bmp" alt="Registartion" style="width: 100%; height: 100%; object-fit: contain;">
+      <img src=".github/img/Registration.bmp" alt="Registration" style="width: 100%; height: 100%; object-fit: contain;">
     </td>
     <td style="vertical-align: top; width: 100%;">
       <img src=".github/img/Login.bmp" alt="Login" style="width: 100%; height: 100%; object-fit: contain;">
     </td>
   </tr>
   <tr>
-    <td style="vertical-align: top;">
+    <td style="vertical-align: top; width: 100%;">
       <img src=".github/img/Create product.bmp" alt="Create product" style="width: 100%; height: 100%; object-fit: contain;">
     </td>
-    <td style="vertical-align: top;">
+    <td style="vertical-align: top; width: 100%;">
       <img src=".github/img/Create meal.bmp" alt="Create meal" style="width: 100%; height: 100%; object-fit: contain;">
     </td>
   </tr>
   <tr>
     <td style="vertical-align: top;" colspan="2">
-      <img src=".github/img/Summary meals.bmp" alt="Summary meal" style="width: 50%; height: 100%; object-fit: contain;">
+      <img src=".github/img/Summary meals.bmp" alt="Summary meals" style="width: 50%; height: 100%; object-fit: contain;">
     </td>
   </tr>
 </table>
 
 ## Installation & Run
 ### Prerequisites
-1. [Go (version 1.20+)](https://go.dev/doc/install)
+1. [Go (1.20+)](https://go.dev/doc/install)
 2. [Docker & Docker Compose](https://docs.docker.com/engine/install/)
 
 ### Clone repository
 ```bash
-# Clone this project
 git clone https://github.com/sustatov027-max/project_calorie_tracker.git
+cd project_calorie_tracker
 ```
 
 ### Configuration
-Before running the service, you need to configure the database connection. The configuration is set via environment variables in the **.env** file. Create a **.env** file in the project root and specify your values for the PostgreSQL connection and other parameters. Example file:
-```.env
+Create `.env` in project root:
+
+```env
 POSTGRES_USER=your_user
 POSTGRES_PASSWORD=your_password
 POSTGRES_DB=tracker_calories
 DB_HOST=pg
-DB_PORT=your_db_port
-APP_COST=your_cost
-APP_SECRET=your_secret
-APP_PORT=your_app_port
+DB_PORT=5432
+COST=14
+SECRET=your_jwt_secret
+PORT=8080
 ```
-
 
 ### Quick Start (Development)
-1. Start the data-base:
-    ```bash
-    make db-up
-    ```
-    This launches PostgreSQL on port 5433 with database tracker_calories.
-2. Run the application:
-    ```bash
-    make dev
-    ```
-    This sets up environment variables and starts the Go server.
+1. Start PostgreSQL:
+   ```bash
+   make db-up
+   ```
+2. Start app:
+   ```bash
+   make dev
+   ```
 
 ### Available Commands
-* `make dev` - Start both database and application
-* `make db-up` - Start only PostgreSQL database
-* `make db-down` - Stop the database
-* `make test` - Run Go tests
+- `make dev` - start database and application
+- `make db-up` - start only PostgreSQL
+- `make db-down` - stop containers
+- `make test` - run Go tests
 
-### API Endpoint : http://localhost:8080
+### API Endpoint
+`http://localhost:8080`
 
 ## Structure
-```
-tracker-calories/
+```text
+project_calorie_tracker/
 ├── cmd/
-│   └── main.go      # Application entry point
+│   └── main.go
 ├── internal/
 │   ├── handlers/
-│   │   ├── diary_handler.go          # Diary handlers
-│   │   ├── product_handler.go        # Product handlers
-│   │   ├── product_handler_test.go   # Unit tests for product
-│   │   ├── user_handler.go           # User handlers
-│   │   ├── user_handler_test.go      # Unit tests for user
+│   │   ├── diary_handler.go
+│   │   ├── product_handler.go
+│   │   ├── product_handler_test.go
+│   │   ├── user_handler.go
+│   │   ├── user_handler_test.go
 │   │   └── mock/
-│   │       ├── mock_product_services.go      # Mocks for product_services
-│   │       └── mock_user_service.go          # Mocks for user_services
+│   │       ├── mock_product_services.go
+│   │       └── mock_user_services.go
+│   ├── middlewares/
+│   │   └── authMiddleware.go
 │   ├── models/
-│   │   ├── daySummary.go    # Summary model
-│   │   ├── mealLog.go       # MealLog model
-│   │   ├── product.go       # Product model
-│   │   └── user.go          # User model
+│   │   ├── daySummary.go
+│   │   ├── mealLog.go
+│   │   ├── product.go
+│   │   └── user.go
 │   ├── repositories/
-│   │   ├── diary_repository.go     # Working with the DB: diary
-│   │   ├── product_repository.go   # Working with the DB: product
-│   │   └── user_repository.go      # Working with the DB: user
+│   │   ├── diary_repository.go
+│   │   ├── product_repository.go
+│   │   └── user_repository.go
 │   ├── services/
-│   │   ├── diary_service.go    # Business logic of diary
-│   │   ├── user_service.go     # Business logic of users
-│   │   └── product_service.go  # Business logic of products
-│   ├── validation/
-│   │   ├── validator.go        # Validation of input data
-│   └── middlewares/
-│       └── authMiddleware.go   # Middleware authentication
+│   │   ├── diary_service.go
+│   │   ├── product_service.go
+│   │   └── user_service.go
+│   └── validation/
+│       └── validator.go
 ├── pkg/
 │   ├── database/
-│   │   └── db.go            # Initializing the connection to the database
+│   │   └── db.go
 │   └── utils/
-│       ├── context.go        # Gin context util
-│       └── hashPasword.go    # Password hash utilities
-├── Dockerfile           # Dockerfile of the application
-├── docker-compose.yml   # Docker Compose config
-├── .env                 # Local environment variables (in .gitignore)
-├── .gitignore
-├── go.mod
-├── go.sum
+│       ├── context.go
+│       └── hashPassword.go
+├── docker-compose.yaml
+├── Dockerfile
 ├── Makefile
 └── README.md
 ```
 
 ## API
-
 ### Authentication
-- **POST** `/auth/register` - Register a new user
-- **POST** `/auth/login` - Login user
+- `POST /auth/register` - register user
+- `POST /auth/login` - login user
 
 ### User Profile
-- **GET** `/me` - Get current user profile (Auth required)
+- `GET /me` - get current user profile (auth required)
 
-### Food Diary (Meals)
-- **GET** `/diary` - Get all meals for current day (Auth required)
-- **POST** `/diary` - Add a new meal to diary (Auth required)
-- **PUT** `/diary/:id` - Update specific meal (Auth required)
-- **DELETE** `/diary/:id` - Remove meal from diary (Auth required)
+### Food Diary
+- `GET /diary` - get meals for current day (auth required)
+- `POST /diary` - add meal (auth required)
+- `PUT /diary/:id` - update meal (auth required)
+- `DELETE /diary/:id` - delete meal (auth required)
+- `GET /diary/summary` - daily summary (auth required)
 
-### Diary Analytics
-- **GET** `/diary/summary` - Get daily calorie summary (Auth required)
+### Products
+- `GET /products` - list products (auth required)
+- `POST /products` - create product (auth required)
+- `PUT /products/:id` - update product (auth required)
+- `DELETE /products/:id` - delete product (auth required)
 
-### Food Products
-- **GET** `/products` - Get all food products (Auth required)
-- **POST** `/products` - Create new food product (Auth required)
-- **PUT** `/products/:id` - Update food product (Auth required)
-- **DELETE** `/products/:id` - Delete food product (Auth required)
-
----
-
-**Note:** All endpoints except `/auth/*` require JWT token in the `Authorization` header as `Bearer <token>`.
+> All endpoints except `/auth/*` require `Authorization: Bearer <token>`.
 
 ## Example requests
-1. Register User
-    ```bash
-    curl -X POST http://localhost:8080/auth/register \
-    -H "Content-Type: application/json" \
-    -d '{"name":"Test","age":19,"email":"test@mail.ru","password":"12345678","weight":76,"height":184,"gender":"male","activeDays":3}'
-    ```
-    Response:
+1. Register user
+```bash
+curl -X POST http://localhost:8080/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Test","age":19,"email":"test@mail.ru","password":"12345678","weight":76,"height":184,"gender":"male","activeDays":3}'
+```
+Response:
+```json
+{
+  "ID": 1,
+  "Name": "Test",
+  "Age": 19,
+  "Email": "test@mail.ru",
+  "Weight": 76,
+  "Height": 184,
+  "Gender": "male",
+  "ActiveDays": 3,
+  "CaloriesNorm": 2950.16
+}
+```
 
-    ```json
-    {
-        "id": 1,
-	    "name": "Test",
-		"age": 19,
-		"email": "test@mail.ru",
-		"weight": 76,
-		"height": 184,
-		"gender": "male",
-		"activeDays": 3,
-		"caloriesNorm": 2950.16
-    }
-    ```
-2. Login User
-    ```bash
-    curl -X POST http://localhost:8080/auth/login \
-    -H "Content-Type: application/json" \
-    -d '{"email": "test@mail.ru", "password": "12345678"}'
-    ```
-    Response:
+2. Login user
+```bash
+curl -X POST http://localhost:8080/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@mail.ru","password":"12345678"}'
+```
+Response:
+```json
+{
+  "token": "mock-jwt-token-12345",
+  "token_type": "Bearer"
+}
+```
 
-    ```json
-    {
-        "token":"mock-jwt-token-12345",
-        "token_type":"Bearer"
-    }
-    ```
-3. Get User Profile (Auth Required)
-    ```bash
-    curl -X GET http://localhost:8080/me \
-    -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-    ```
-    Response:
+3. Add meal to diary
+```bash
+curl -X POST http://localhost:8080/diary \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{"product_id":123,"grams":100}'
+```
+Response:
+```json
+{
+  "id": 1,
+  "user_id": 1,
+  "product_id": 123,
+  "product": {
+    "ID": 123,
+    "Name": "Avocado",
+    "Calories": 160,
+    "Proteins": 2,
+    "Fats": 15,
+    "Carbohydrates": 9,
+    "CreatedAt": "2024-01-22T15:00:00Z"
+  },
+  "grams": 100,
+  "created_at": "2024-01-22T13:45:00Z"
+}
+```
 
-    ```json
-    {
-        "id": 1,
-        "name": "Test",
-        "age": 19,
-        "email": "test@mail.ru",
-        "weight": 76,
-        "height": 184,
-        "gender": "male",
-        "activeDays": 3,
-        "caloriesNorm": 2950.16
-    }
-    ```
-4. Add Meal to Diary
-    ```bash
-    curl -X POST http://localhost:8080/diary \
-    -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
-    -H "Content-Type: application/json" \
-    -d '{"product_id": 123, "gramms": 100}'
-    ```
-    Response:
-
-    ```json
-    {
-    "id": 1,
-    "user_id": 1,
-    "product_id": 123,
-    "product": ...,
-    "gramms": 100,
-    "created_at": "2024-01-22T13:45:00Z"
-    }
-    ```
-5. Get Today's Meals
-    ```bash
-    curl -X GET http://localhost:8080/diary \
-    -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-    ```
-    Response:
-
-    ```json
-    [
-        {
-            "id": 1,
-            "user_id": 1,
-            "product_id": 123,
-            "product": [...],
-            "gramms": 100,
-            "created_at": "2024-01-22T13:45:00Z"
-        }
-    ]
-    ```
-6. Create Food Product
-    ```bash
-    curl -X POST http://localhost:8080/products \
-    -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
-    -H "Content-Type: application/json" \
-    -d '{"name": "Avocado", "calories": 160, "proteins": 2, "fats": 15, "carbohydrates": 9}'
-    ```
-    Response:
-
-    ```json
-    {
-    "id": 124,
-    "name": "Avocado",
-    "calories": 160,
-    "proteins": 2,
-    "fats": 15,
-    "carbohydrates": 9,
-    "created_at": "2024-01-22T15:00:00Z"
-    }
-    ```
-7. Get Daily Summary
-    ```bash
-    curl -X GET http://localhost:8080/diary/summary \
-    -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-    ```
-    Response:
-
-    ```json
-    {
-        "meals": [...],
-        "total_calories": 1850,
-        "total_proteins": 83,
-        "total_fats": 57,
-        "total_carbs": 188,
-        "daily_norm": 2100,
-        "remaining": 350
-    }
-    ```
+4. Get daily summary
+```bash
+curl -X GET http://localhost:8080/diary/summary \
+  -H "Authorization: Bearer <token>"
+```
+Response:
+```json
+{
+  "meals": [],
+  "total_calories": 1850,
+  "total_proteins": 83,
+  "total_fats": 57,
+  "total_carbs": 188,
+  "daily_norm": 2100,
+  "remaining": 250
+}
+```

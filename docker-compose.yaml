@@ -19,11 +19,11 @@ services:
     restart: always
     environment:
       DB_CONFIG: "host=${DB_HOST} user=${POSTGRES_USER} password=${POSTGRES_PASSWORD} dbname=${POSTGRES_DB} port=5432 sslmode=disable"
-      COST: ${APP_COST}
-      SECRET: ${APP_SECRET}
-      PORT: ${APP_PORT}
+      COST: ${COST}
+      SECRET: ${SECRET}
+      PORT: ${PORT}
     ports:
-      - "${APP_PORT}:${APP_PORT}"
+      - "${PORT}:${PORT}"
     depends_on:
       pg:
         condition: service_healthy
