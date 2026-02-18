@@ -48,7 +48,7 @@ func (h *ProductHandler) CreateProduct(ctx *gin.Context) {
 
 	err := ctx.ShouldBindJSON(&body)
 	if err != nil {
-		ctx.IndentedJSON(http.StatusBadRequest, map[string]string{"Error read request body": err.Error()})
+		ctx.IndentedJSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 		return
 	}
 
@@ -60,7 +60,7 @@ func (h *ProductHandler) CreateProduct(ctx *gin.Context) {
 
 	newProduct, err := h.service.CreateProduct(body.Name, body.Calories, body.Proteins, body.Fats, body.Carbohydrates)
 	if err != nil {
-		ctx.IndentedJSON(http.StatusInternalServerError, map[string]string{"Error create product": err.Error()})
+		ctx.IndentedJSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
 	}
 
@@ -70,7 +70,7 @@ func (h *ProductHandler) CreateProduct(ctx *gin.Context) {
 func (h *ProductHandler) GetAllProducts(ctx *gin.Context) {
 	products, err := h.service.GetAllProducts()
 	if err != nil {
-		ctx.IndentedJSON(http.StatusInternalServerError, map[string]string{"Error read product table": err.Error()})
+		ctx.IndentedJSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
 	}
 
@@ -82,7 +82,7 @@ func (h *ProductHandler) DeleteProduct(ctx *gin.Context) {
 
 	err := h.service.DeleteProduct(id)
 	if err != nil {
-		ctx.IndentedJSON(http.StatusInternalServerError, map[string]string{"Error delete product": err.Error()})
+		ctx.IndentedJSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
 	}
 
@@ -94,19 +94,19 @@ func (h *ProductHandler) UpdateProduct(ctx *gin.Context) {
 	idParam := ctx.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		ctx.IndentedJSON(http.StatusBadRequest, map[string]string{"Error read id": err.Error()})
+		ctx.IndentedJSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 		return
 	}
 
 	err = ctx.ShouldBindJSON(&body)
 	if err != nil {
-		ctx.IndentedJSON(http.StatusBadRequest, map[string]string{"Error read request body": err.Error()})
+		ctx.IndentedJSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 		return
 	}
 
 	updateProduct, err := h.service.UpdateProduct(id, body.Name, body.Calories, body.Proteins, body.Fats, body.Carbohydrates)
 	if err != nil {
-		ctx.IndentedJSON(http.StatusInternalServerError, map[string]string{"Error update product": err.Error()})
+		ctx.IndentedJSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
 	}
 
